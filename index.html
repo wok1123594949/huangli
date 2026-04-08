@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>今日黄历</title>
+  <title>秘密基地</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -11,18 +11,18 @@
 </head>
 <body>
 
-<!-- ===== 开屏动画层 ===== -->
+<!-- ===== 开屏动画 ===== -->
 <div id="intro" aria-hidden="true">
   <div class="intro-bg-pulse"></div>
   <div class="intro-content">
     <div class="intro-chars">
-      <span class="ic" style="--delay:0s">今</span>
-      <span class="ic" style="--delay:0.25s">日</span>
-      <span class="ic" style="--delay:0.5s">黄</span>
-      <span class="ic" style="--delay:0.75s">历</span>
+      <span class="ic" style="--delay:0s">秘</span>
+      <span class="ic" style="--delay:0.22s">密</span>
+      <span class="ic" style="--delay:0.44s">基</span>
+      <span class="ic" style="--delay:0.66s">地</span>
     </div>
     <div class="intro-line"></div>
-    <div class="intro-sub">传统历法 · 今日宜忌</div>
+    <div class="intro-sub">黄历 · 圣杯 · 传统智慧</div>
   </div>
 </div>
 
@@ -34,13 +34,11 @@
   </div>
 </div>
 
-<!-- ===== 背景画布：水墨粒子 + 落叶 ===== -->
+<!-- ===== 画布层 ===== -->
 <canvas id="bgCanvas"></canvas>
-
-<!-- ===== 特效画布：点击墨迹 ===== -->
 <canvas id="fxCanvas"></canvas>
 
-<!-- ===== 音乐开关（固定按钮） ===== -->
+<!-- ===== 音乐开关 ===== -->
 <button id="musicToggle" class="music-toggle" title="古筝背景音乐">
   <svg class="music-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
     <path d="M9 18V5l12-2v13"/>
@@ -51,114 +49,187 @@
   <span class="music-label" id="musicLabel">乐</span>
 </button>
 
-<!-- ===== 主内容 ===== -->
+<!-- ===== 主容器 ===== -->
 <div class="container">
 
   <!-- 印章 -->
   <div class="seal">
-    <div class="seal-text">今<br>日<br>历</div>
+    <div class="seal-text">秘<br>密<br>地</div>
   </div>
 
-  <!-- 头部日期区 -->
-  <header class="header">
-    <div class="year-label"  id="yearLabel"></div>
-    <div class="day-number"  id="dayNumber"></div>
-    <div class="lunar-date"  id="lunarDate"></div>
-    <div class="ganzhi-row"  id="ganzhiRow"></div>
-    <div class="jieqi-badge" id="jieqiBadge"></div>
-  </header>
+  <!-- ===== Tab 横栏 ===== -->
+  <nav class="tab-bar">
+    <div class="tab-indicator" id="tabIndicator"></div>
+    <button class="tab-btn active" data-tab="huangli">
+      <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+        <rect x="2" y="3" width="16" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M7 1v4M13 1v4M2 8h16" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="5" y="11" width="3" height="3" rx="0.5"/>
+        <rect x="12" y="11" width="3" height="3" rx="0.5"/>
+      </svg>
+      <span>黄 历</span>
+    </button>
+    <button class="tab-btn" data-tab="shengbei">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+        <path d="M10 2 C10 2 4 6 4 11 A6 6 0 0 0 16 11 C16 6 10 2 10 2 Z"/>
+        <path d="M8 11 C8 13 9 15 10 16 C11 15 12 13 12 11"/>
+        <path d="M10 16 L10 19"/>
+        <path d="M7 19 L13 19"/>
+      </svg>
+      <span>圣 杯</span>
+    </button>
+  </nav>
 
-  <!-- 宜忌分隔线 -->
-  <div class="divider">
-    <div class="divider-line"></div>
-    <div class="divider-center">今 日 宜 忌</div>
-    <div class="divider-line"></div>
-  </div>
+  <!-- ===== 黄历面板 ===== -->
+  <div id="panel-huangli" class="panel active">
 
-  <!-- 宜忌双栏 -->
-  <div class="yiji-grid">
-    <div class="yiji-card yi-card">
-      <div class="card-title yi-title">宜</div>
-      <div class="tag-list" id="yiList"></div>
-    </div>
-    <div class="yiji-card ji-card">
-      <div class="card-title ji-title">忌</div>
-      <div class="tag-list" id="jiList"></div>
-    </div>
-  </div>
+    <header class="header">
+      <div class="year-label"  id="yearLabel"></div>
+      <div class="day-number"  id="dayNumber"></div>
+      <div class="lunar-date"  id="lunarDate"></div>
+      <div class="ganzhi-row"  id="ganzhiRow"></div>
+      <div class="jieqi-badge" id="jieqiBadge"></div>
+    </header>
 
-  <!-- 底部信息条 -->
-  <div class="info-bar">
-    <div class="info-item">
-      <div class="info-label">纳音五行</div>
-      <div class="info-value" id="wuxing"></div>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-center">今 日 宜 忌</div>
+      <div class="divider-line"></div>
     </div>
-    <div class="info-divider"></div>
-    <div class="info-item">
-      <div class="info-label">冲 煞</div>
-      <div class="info-value" id="chong"></div>
-    </div>
-    <div class="info-divider"></div>
-    <div class="info-item">
-      <div class="info-label">值 神</div>
-      <div class="info-value" id="zhishen"></div>
-    </div>
-    <div class="info-divider"></div>
-    <div class="info-item">
-      <div class="info-label">今日运势</div>
-      <div class="info-value" id="luck"></div>
-    </div>
-    <div class="info-divider"></div>
-    <div class="info-item">
-      <div class="info-label">节 气</div>
-      <div class="info-value" id="jieqiInfo"></div>
-    </div>
-  </div>
 
-  <!-- ===== 扩展信息区 ===== -->
-  <div class="divider extra-divider">
-    <div class="divider-line"></div>
-    <div class="divider-center">更 多 详 情</div>
-    <div class="divider-line"></div>
-  </div>
+    <div class="yiji-grid">
+      <div class="yiji-card yi-card">
+        <div class="card-title yi-title">宜</div>
+        <div class="tag-list" id="yiList"></div>
+      </div>
+      <div class="yiji-card ji-card">
+        <div class="card-title ji-title">忌</div>
+        <div class="tag-list" id="jiList"></div>
+      </div>
+    </div>
 
-  <!-- 月相 + 彭祖百忌 并排 -->
-  <div class="extra-grid">
+    <div class="info-bar">
+      <div class="info-item">
+        <div class="info-label">纳音五行</div>
+        <div class="info-value" id="wuxing"></div>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <div class="info-label">冲 煞</div>
+        <div class="info-value" id="chong"></div>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <div class="info-label">值 神</div>
+        <div class="info-value" id="zhishen"></div>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <div class="info-label">今日运势</div>
+        <div class="info-value" id="luck"></div>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-item">
+        <div class="info-label">节 气</div>
+        <div class="info-value" id="jieqiInfo"></div>
+      </div>
+    </div>
 
-    <!-- 月相 -->
-    <div class="extra-card moon-card">
-      <div class="extra-card-label">月 相</div>
-      <div class="moon-visual" id="moonVisual">
-        <div class="moon-body">
-          <div class="moon-shadow" id="moonShadow"></div>
+    <div class="divider extra-divider">
+      <div class="divider-line"></div>
+      <div class="divider-center">更 多 详 情</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="extra-grid">
+      <div class="extra-card moon-card">
+        <div class="extra-card-label">月 相</div>
+        <div class="moon-visual">
+          <div class="moon-body">
+            <div class="moon-shadow" id="moonShadow"></div>
+          </div>
+        </div>
+        <div class="moon-name" id="moonName"></div>
+        <div class="moon-age"  id="moonAge"></div>
+      </div>
+      <div class="extra-card pengzu-card">
+        <div class="extra-card-label">彭祖百忌</div>
+        <div class="pengzu-line" id="pengzuStem"></div>
+        <div class="pengzu-line" id="pengzuBranch"></div>
+      </div>
+    </div>
+
+    <div class="shichen-section">
+      <div class="shichen-label">十二时辰吉凶</div>
+      <div class="shichen-grid" id="shichenGrid"></div>
+    </div>
+
+    <div class="clock">
+      <div class="clock-time"    id="clockTime"></div>
+      <div class="clock-shichen" id="clockShichen"></div>
+    </div>
+
+  </div><!-- /panel-huangli -->
+
+  <!-- ===== 圣杯面板 ===== -->
+  <div id="panel-shengbei" class="panel">
+
+    <div class="bei-header">
+      <div class="bei-title">圣 杯 问 卜</div>
+      <div class="bei-hint">心中默念所求之事，诚心掷杯以问神明</div>
+    </div>
+
+    <!-- 两个杯筊 -->
+    <div class="bei-stage">
+      <div class="bei-scene" id="beiScene1">
+        <div class="bei-card" id="beiCard1">
+          <div class="bei-face yang-face">
+            <div class="bei-highlight"></div>
+            <div class="bei-grain"></div>
+          </div>
+          <div class="bei-face yin-face">
+            <div class="bei-texture"></div>
+          </div>
         </div>
       </div>
-      <div class="moon-name" id="moonName"></div>
-      <div class="moon-age" id="moonAge"></div>
+      <div class="bei-vs">✦</div>
+      <div class="bei-scene" id="beiScene2">
+        <div class="bei-card" id="beiCard2">
+          <div class="bei-face yang-face">
+            <div class="bei-highlight"></div>
+            <div class="bei-grain"></div>
+          </div>
+          <div class="bei-face yin-face">
+            <div class="bei-texture"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- 彭祖百忌 -->
-    <div class="extra-card pengzu-card">
-      <div class="extra-card-label">彭祖百忌</div>
-      <div class="pengzu-line" id="pengzuStem"></div>
-      <div class="pengzu-line" id="pengzuBranch"></div>
+    <!-- 掷杯按钮 -->
+    <div class="throw-wrap">
+      <button class="throw-btn" id="throwBtn">
+        <span class="throw-text">掷  杯</span>
+        <div class="throw-ripple"></div>
+      </button>
     </div>
 
-  </div>
+    <!-- 结果区 -->
+    <div class="bei-result" id="beiResult">
+      <div class="result-icon" id="resultIcon"></div>
+      <div class="result-name" id="resultName"></div>
+      <div class="result-msg"  id="resultMsg"></div>
+    </div>
 
-  <!-- 十二时辰吉凶 -->
-  <div class="shichen-section">
-    <div class="shichen-label">十二时辰吉凶</div>
-    <div class="shichen-grid" id="shichenGrid"></div>
-  </div>
+    <!-- 历次记录 -->
+    <div class="bei-history">
+      <div class="history-label">历次记录</div>
+      <div class="history-dots" id="historyDots"></div>
+    </div>
 
-  <!-- 实时时钟 -->
-  <div class="clock">
-    <div class="clock-time"    id="clockTime"></div>
-    <div class="clock-shichen" id="clockShichen"></div>
-  </div>
+  </div><!-- /panel-shengbei -->
 
-</div>
+</div><!-- /container -->
 
 <script src="main.js"></script>
 </body>

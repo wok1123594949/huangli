@@ -1,739 +1,807 @@
-/* ================================================================
-   数据定义
-================================================================ */
-const STEMS    = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-const ZODIAC   = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
-const WEEKDAYS = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+'use strict';
 
-const NAYIN_60 = [
-  '海中金','海中金','炉中火','炉中火','大林木','大林木',
-  '路旁土','路旁土','剑锋金','剑锋金','山头火','山头火',
-  '涧下水','涧下水','城头土','城头土','白蜡金','白蜡金',
-  '杨柳木','杨柳木','泉中水','泉中水','屋上土','屋上土',
-  '霹雳火','霹雳火','松柏木','松柏木','长流水','长流水',
-  '砂中金','砂中金','山下火','山下火','平地木','平地木',
-  '壁上土','壁上土','金箔金','金箔金','覆灯火','覆灯火',
-  '天河水','天河水','大驿土','大驿土','钗钏金','钗钏金',
-  '桑柘木','桑柘木','大溪水','大溪水','沙中土','沙中土',
-  '天上火','天上火','石榴木','石榴木','大海水','大海水'
+/* =============================================
+   黄历数据
+   ============================================= */
+const HEAVENLY_STEMS   = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const EARTHLY_BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const ZODIACS          = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+const NAYIN = [
+  '海中金','炉中火','大林木','路旁土','剑锋金','山头火',
+  '涧下水','城头土','白蜡金','杨柳木','泉中水','屋上土',
+  '霹雳火','松柏木','长流水','砂中金','山下火','平地木',
+  '壁上土','金箔金','覆灯火','天河水','大驿土','钗钏金',
+  '桑柘木','大溪水','沙中土','天上火','石榴木','大海水',
 ];
-
-const JICHU = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
-
-const JICHU_YIJI = {
-  '建': { yi:['祭祀','祈福','上梁','出行','入学','开光','求嗣'],    ji:['嫁娶','动土','安葬','开市','破土','修造'] },
-  '除': { yi:['沐浴','理发','治病','祭祀','扫舍','解除','求医'],   ji:['嫁娶','安葬','入宅','搬家','开市'] },
-  '满': { yi:['祭祀','纳财','入宅','求嗣','祈福','纳采'],          ji:['嫁娶','开市','动土','安葬','诉讼'] },
-  '平': { yi:['出行','嫁娶','开市','修造','立约','纳采','开光'],   ji:['求医','安葬','破土','动土'] },
-  '定': { yi:['嫁娶','开市','祭祀','入宅','立约','纳采','结盟'],   ji:['出行','求医','诉讼','远行'] },
-  '执': { yi:['祭祀','纳财','捕猎','治病','理发'],                  ji:['嫁娶','移徙','开市','出行','修造'] },
-  '破': { yi:['求医','拆卸','破屋','动土'],                         ji:['嫁娶','开市','祭祀','出行','安葬','入宅'] },
-  '危': { yi:['祭祀','纳财','求医','解除'],                         ji:['出行','登高','动土','开市','安床'] },
-  '成': { yi:['嫁娶','入宅','开市','祭祀','出行','立约','纳采'],   ji:['诉讼','纳税','争讼'] },
-  '收': { yi:['纳财','嫁娶','入宅','祭祀','收债','纳采'],          ji:['出行','开市','求医','治病'] },
-  '开': { yi:['嫁娶','开市','入宅','出行','祭祀','动土','修造'],   ji:['安葬','治丧','修坟'] },
-  '闭': { yi:['安葬','治丧','塞穴','填沟','祭祀'],                  ji:['嫁娶','出行','开市','动土','入宅'] }
+const JIANCHU = ['建','除','满','平','定','执','破','危','成','收','开','闭'];
+const JIANCHU_YI = {
+  '建':['出行','上任','祭祀','求财'],
+  '除':['沐浴','扫舍','祈福','求医'],
+  '满':['纳财','开市','婚嫁','移徙'],
+  '平':['修造','动土','出行','安床'],
+  '定':['出行','订盟','祭祀','安葬'],
+  '执':['祭祀','斋醮','收债','捕捉'],
+  '破':['破屋','坏垣','余事勿取'],
+  '危':['安床','祭祀','出行','沐浴'],
+  '成':['嫁娶','移徙','开市','纳财'],
+  '收':['收账','纳财','捕捉','猎取'],
+  '开':['开市','出行','嫁娶','移徙','动土'],
+  '闭':['筑堤','塞穴','合房','补垣'],
 };
-
-const JICHU_LUCK = {
-  '建':'一般','除':'一般','满':'吉','平':'吉',
-  '定':'大吉','执':'一般','破':'凶','危':'一般',
-  '成':'大吉','收':'吉','开':'大吉','闭':'一般'
+const JIANCHU_JI = {
+  '建':['安葬','破土','动土'],
+  '除':['嫁娶','移徙'],
+  '满':['祭祀','出行'],
+  '平':['葬礼'],
+  '定':['开市','动土','破土'],
+  '执':['嫁娶','开市','移徙'],
+  '破':['万事不宜'],
+  '危':['登高','涉水'],
+  '成':['诉讼','词讼'],
+  '收':['开市','嫁娶','移徙'],
+  '开':['安葬','动土','破土'],
+  '闭':['开市','出行','嫁娶'],
 };
-
-const CHONG_ZODIAC = ['马','羊','猴','鸡','狗','猪','鼠','牛','虎','兔','龙','蛇'];
-
-const SOLAR_TERMS = [
-  {m:1, d:5, name:'小寒'},{m:1, d:20,name:'大寒'},
-  {m:2, d:4, name:'立春'},{m:2, d:19,name:'雨水'},
-  {m:3, d:6, name:'惊蛰'},{m:3, d:21,name:'春分'},
-  {m:4, d:5, name:'清明'},{m:4, d:20,name:'谷雨'},
-  {m:5, d:6, name:'立夏'},{m:5, d:21,name:'小满'},
-  {m:6, d:6, name:'芒种'},{m:6, d:21,name:'夏至'},
-  {m:7, d:7, name:'小暑'},{m:7, d:23,name:'大暑'},
-  {m:8, d:7, name:'立秋'},{m:8, d:23,name:'处暑'},
-  {m:9, d:8, name:'白露'},{m:9, d:23,name:'秋分'},
-  {m:10,d:8, name:'寒露'},{m:10,d:23,name:'霜降'},
-  {m:11,d:7, name:'立冬'},{m:11,d:22,name:'小雪'},
-  {m:12,d:7, name:'大雪'},{m:12,d:22,name:'冬至'}
-];
+const LUCK_LEVEL = {
+  '建':3,'除':4,'满':3,'平':3,'定':4,'执':2,'破':1,'危':2,'成':5,'收':3,'开':4,'闭':2
+};
+const LUCK_TEXT  = { 1:'凶', 2:'小凶', 3:'平', 4:'吉', 5:'大吉' };
 
 const SHICHEN_NAMES  = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const SHICHEN_TIMES  = ['23-01','01-03','03-05','05-07','07-09','09-11','11-13','13-15','15-17','17-19','19-21','21-23'];
-const SHICHEN_FULL   = ['子时','丑时','寅时','卯时','辰时','巳时','午时','未时','申时','酉时','戌时','亥时'];
 const DEITY_CYCLE    = ['青龙','明堂','天刑','朱雀','金匮','天德','白虎','玉堂','天牢','玄武','司命','勾陈'];
-const LUCKY_DEITIES  = new Set(['青龙','明堂','金匮','天德','玉堂','司命']); // 黄道六神
+const LUCKY_DEITIES  = new Set(['青龙','明堂','金匮','天德','玉堂','司命']);
 
-/* 彭祖百忌 */
-const PENG_ZU_STEM = [
-  '甲不开仓，财物耗散','乙不栽植，千株不长','丙不修灶，必见灾殃','丁不剃头，头必生疮',
-  '戊不受田，田主不详','己不破券，二比并亡','庚不经络，织机虚张','辛不合酱，主人不尝',
-  '壬不泱水，更难提防','癸不词讼，理弱敌强'
-];
-const PENG_ZU_BRANCH = [
-  '子不问卜，自惹祸殃','丑不冠带，主不还乡','寅不祭祀，神鬼不尝','卯不穿井，水泉不香',
-  '辰不哭泣，必主重丧','巳不远行，财物伏藏','午不苫盖，屋主更张','未不服药，毒气入肠',
-  '申不安床，鬼祟入房','酉不会客，醉坐颠狂','戌不吃犬，作怪上床','亥不嫁娶，不利新郎'
+const PENG_ZU_STEM   = ['甲不开仓财物耗散','乙不栽植千株不长','丙不修灶必见灾殃','丁不剃头头必生疮','戊不受田田主不祥','己不破券二比并亡','庚不经络织机虚张','辛不合酱主人不尝','壬不泱水更难提防','癸不词讼理弱敌强'];
+const PENG_ZU_BRANCH = ['子不问卜自惹祸殃','丑不冠带主不还乡','寅不祭祀神鬼不尝','卯不穿井水泉不香','辰不哭泣必主重丧','巳不远行财物伏藏','午不苫盖屋主更张','未不服药毒气入肠','申不安床鬼祟入房','酉不会客醉坐颠狂','戌不吃犬作怪上床','亥不嫁娶不利新郎'];
+
+const SOLAR_TERMS = [
+  {month:1,  day:6,  name:'小寒'},{month:1,  day:20, name:'大寒'},
+  {month:2,  day:4,  name:'立春'},{month:2,  day:19, name:'雨水'},
+  {month:3,  day:6,  name:'惊蛰'},{month:3,  day:21, name:'春分'},
+  {month:4,  day:5,  name:'清明'},{month:4,  day:20, name:'谷雨'},
+  {month:5,  day:6,  name:'立夏'},{month:5,  day:21, name:'小满'},
+  {month:6,  day:6,  name:'芒种'},{month:6,  day:21, name:'夏至'},
+  {month:7,  day:7,  name:'小暑'},{month:7,  day:23, name:'大暑'},
+  {month:8,  day:7,  name:'立秋'},{month:8,  day:23, name:'处暑'},
+  {month:9,  day:8,  name:'白露'},{month:9,  day:23, name:'秋分'},
+  {month:10, day:8,  name:'寒露'},{month:10, day:23, name:'霜降'},
+  {month:11, day:7,  name:'立冬'},{month:11, day:22, name:'小雪'},
+  {month:12, day:7,  name:'大雪'},{month:12, day:22, name:'冬至'},
 ];
 
-/* 落叶颜色 */
-const LEAF_COLORS = [
-  [139,32,32],[181,38,30],[192,99,0],[160,82,45],[107,58,42],[201,140,50]
-];
+/* 圣杯消息池 */
+const BEI_MESSAGES = {
+  sheng: [
+    '神明允准，此事可为，放手去做',
+    '时机已至，大可前行，前途光明',
+    '心诚则灵，神明点头，好运随行',
+    '诸事顺遂，迎难而上，必有所成',
+    '吉祥如意，勇往直前，神明庇护',
+  ],
+  xiao: [
+    '神明欢笑，心念未诚，再掷一次',
+    '缘分未到，静心再问，耐心等候',
+    '天机未现，诚心礼拜，重新一问',
+    '神明有意，心念不定，平心静气',
+  ],
+  yin: [
+    '神明摇头，此事暂缓，三思而行',
+    '时机未至，另觅他途，静候良机',
+    '此路不通，宜换方向，转机自来',
+    '稍安勿躁，暂时搁置，待时而动',
+    '慎重行事，不可操之过急，再观其变',
+  ],
+};
 
-/* ================================================================
-   算法函数
-================================================================ */
-function getJDN(year, month, day) {
-  const a = Math.floor((14-month)/12);
-  const y = year+4800-a;
-  const m = month+12*a-3;
-  return day+Math.floor((153*m+2)/5)+365*y+Math.floor(y/4)-Math.floor(y/100)+Math.floor(y/400)-32045;
+const BEI_NAMES = { sheng:'◯ 圣杯', xiao:'◑ 笑杯', yin:'● 阴杯' };
+const BEI_ICONS = { sheng:'🌕', xiao:'🌗', yin:'🌑' };
+
+/* =============================================
+   干支 & 黄历计算
+   ============================================= */
+function getJDN(y, m, d) {
+  const a = Math.floor((14 - m) / 12);
+  const yr = y + 4800 - a;
+  const mo = m + 12 * a - 3;
+  return d + Math.floor((153 * mo + 2) / 5) + 365 * yr
+    + Math.floor(yr / 4) - Math.floor(yr / 100) + Math.floor(yr / 400) - 32045;
 }
 
 function getYearGanzhi(year) {
-  const si = ((year-4)%10+10)%10;
-  const bi = ((year-4)%12+12)%12;
-  return { ganzhi: STEMS[si]+BRANCHES[bi], stemIdx:si, branchIdx:bi, zodiac:ZODIAC[bi] };
+  const base = 4; // 甲子年 = 公元4年
+  const idx  = ((year - base) % 60 + 60) % 60;
+  return HEAVENLY_STEMS[idx % 10] + EARTHLY_BRANCHES[idx % 12];
 }
 
-function getDayGanzhi(year, month, day) {
-  const jdn    = getJDN(year, month, day);
-  const offset = jdn - 2451545; // 2000-01-01 = 甲戌日
-  const si     = ((offset%10)+10)%10;
-  const bi     = ((offset+10)%12+12)%12;
-  return { ganzhi: STEMS[si]+BRANCHES[bi], stemIdx:si, branchIdx:bi };
+function getMonthGanzhi(year, month) {
+  const startStem = ((year - 4) % 5 + 5) % 5 * 2;
+  const stemIdx   = (startStem + month - 1) % 10;
+  const branchIdx = (month + 1) % 12;
+  return HEAVENLY_STEMS[stemIdx] + EARTHLY_BRANCHES[branchIdx];
 }
 
-function getSolarMonthBranchIdx(year, month, day) {
-  const doy = Math.round((new Date(year,month-1,day)-new Date(year,0,1))/86400000)+1;
-  const bounds = [
-    {doy:6,branch:1},{doy:35,branch:2},{doy:65,branch:3},{doy:95,branch:4},
-    {doy:126,branch:5},{doy:157,branch:6},{doy:188,branch:7},{doy:219,branch:8},
-    {doy:251,branch:9},{doy:281,branch:10},{doy:311,branch:11},{doy:341,branch:0}
-  ];
-  let b = 0;
-  for (const bd of bounds) { if (doy >= bd.doy) b = bd.branch; }
-  return b;
+function getDayGanzhi(date) {
+  const jdn  = getJDN(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const stem = ((jdn + 5) % 10 + 10) % 10;
+  const bran = ((jdn + 3) % 12 + 12) % 12;
+  return { gz: HEAVENLY_STEMS[stem] + EARTHLY_BRANCHES[bran], stem, bran };
 }
 
-function getMonthGanzhi(year, month, day) {
-  const bi  = getSolarMonthBranchIdx(year, month, day);
-  const base = [2,4,6,8,0,2,4,6,8,0][((year-4)%10+10)%10];
-  const si  = (base + (bi-2+12)%12) % 10;
-  return { ganzhi: STEMS[si]+BRANCHES[bi], stemIdx:si, branchIdx:bi };
+function getNayin(gz60Index) {
+  return NAYIN[Math.floor(gz60Index / 2)];
 }
 
-function getNayin(stemIdx, branchIdx) {
-  for (let k=0; k<60; k++) {
-    if (k%10===stemIdx && k%12===branchIdx) return NAYIN_60[k];
-  }
-  return '—';
-}
-
-function getJiChu(monthBranchIdx, dayBranchIdx) {
-  return JICHU[((dayBranchIdx-monthBranchIdx)%12+12)%12];
+function getJianchu(dayBranchIdx, monthBranchIdx) {
+  const offset = (dayBranchIdx - monthBranchIdx + 12) % 12;
+  return JIANCHU[offset];
 }
 
 function getSolarTerm(month, day) {
   for (const t of SOLAR_TERMS) {
-    if (t.m===month && t.d===day) return { name:t.name, exact:true };
+    if (t.month === month && Math.abs(t.day - day) <= 1) return t.name;
   }
   return null;
 }
 
-function getNearestSolarTerm(month, day) {
-  const t = getSolarTerm(month, day);
-  if (t) return t.name;
-  let last = null;
-  for (const st of SOLAR_TERMS) {
-    if (st.m < month || (st.m===month && st.d<=day)) last = st.name;
-  }
-  return last || '—';
-}
-
-function getLunarDate(date) {
-  try {
-    const fmtM = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { month:'long' });
-    const fmtD = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { day:'numeric' });
-    const monthStr = fmtM.formatToParts(date).find(p=>p.type==='month')?.value || '';
-    const dayStr   = fmtD.formatToParts(date).find(p=>p.type==='day')?.value   || '';
-    return { monthStr, dayStr, ok:true };
-  } catch { return { monthStr:'', dayStr:'', ok:false }; }
-}
-
-function getShichen(hour) {
-  return SHICHEN_FULL[Math.floor(((hour+1)%24)/2)];
-}
-
-/* 月相计算 (参考新月: 2025-01-29 12:35 UTC) */
 function getMoonPhase(date) {
-  const REF_NEW_MOON  = new Date('2025-01-29T12:35:00Z');
-  const LUNAR_CYCLE   = 29.530588853;
-  const elapsed = (date - REF_NEW_MOON) / 86400000;
-  return ((elapsed % LUNAR_CYCLE) + LUNAR_CYCLE) % LUNAR_CYCLE;
+  const refNewMoon = new Date(2000, 0, 6, 18, 14);
+  const lunation   = 29.53058867;
+  const diffDays   = (date - refNewMoon) / (1000 * 60 * 60 * 24);
+  return ((diffDays % lunation) + lunation) % lunation;
 }
 
 function getMoonPhaseName(phase) {
-  if (phase < 1.85)  return { name:'朔·新月',   emoji:'🌑', pct: 0 };
-  if (phase < 7.38)  return { name:'娥眉月',     emoji:'🌒', pct: phase/14.77*50 };
-  if (phase < 9.23)  return { name:'上弦月',     emoji:'🌓', pct: 50 };
-  if (phase < 14.77) return { name:'盈凸月',     emoji:'🌔', pct: 50+((phase-9.23)/5.54)*50 };
-  if (phase < 16.61) return { name:'望·满月',    emoji:'🌕', pct: 100 };
-  if (phase < 22.15) return { name:'亏凸月',     emoji:'🌖', pct: 100-((phase-16.61)/5.54)*50 };
-  if (phase < 24.92) return { name:'下弦月',     emoji:'🌗', pct: 50 };
-  return               { name:'残月',           emoji:'🌘', pct: (29.53-phase)/6.61*50 };
+  if (phase < 1.85)  return { name:'新月', emoji:'🌑', pct:0 };
+  if (phase < 7.38)  return { name:'峨眉月', emoji:'🌒', pct:25 };
+  if (phase < 9.22)  return { name:'上弦月', emoji:'🌓', pct:50 };
+  if (phase < 14.77) return { name:'盈凸月', emoji:'🌔', pct:75 };
+  if (phase < 16.61) return { name:'满月',   emoji:'🌕', pct:100 };
+  if (phase < 22.15) return { name:'亏凸月', emoji:'🌖', pct:75 };
+  if (phase < 23.99) return { name:'下弦月', emoji:'🌗', pct:50 };
+  if (phase < 29.53) return { name:'残月',   emoji:'🌘', pct:25 };
+  return { name:'新月', emoji:'🌑', pct:0 };
 }
 
-/* 渲染月相阴影（CSS transform 模拟相位） */
 function renderMoon(phase) {
-  const shadowEl = document.getElementById('moonShadow');
-  const nameEl   = document.getElementById('moonName');
-  const ageEl    = document.getElementById('moonAge');
-  if (!shadowEl) return;
-
-  const info = getMoonPhaseName(phase);
-
-  /* 用 translateX 偏移阴影遮盖实现月相 */
-  /* pct=0 全遮(新月), pct=100 不遮(满月)
-     前半段:阴影从右移走 → 右侧亮起(娥眉→上弦→盈凸)
-     后半段:阴影从左推入 → 左侧暗起(亏凸→下弦→残月) */
-  let shadowStyle = '';
-  const pct = info.pct;
-  if (pct <= 50) {
-    /* 0→50: 新月→上弦, 阴影覆盖右侧, translateX 从 0 向 -100% */
-    const x = (50 - pct) * 2; /* 100→0% */
-    shadowStyle = `translateX(${x}%)`;
+  const shadow = document.getElementById('moonShadow');
+  if (!shadow) return;
+  const pct = phase / 29.53;
+  if (pct < 0.5) {
+    shadow.style.left = '';
+    shadow.style.right = '0';
+    shadow.style.borderRadius = '50%';
+    const sc = 2 - pct * 4;
+    shadow.style.transform = `scaleX(${Math.max(0, sc)})`;
   } else {
-    /* 50→100: 上弦→满月, 阴影从左推 */
-    /* 反向: 左侧出现阴影 */
-    const x = -(pct - 50) * 2; /* 0→-100% */
-    shadowStyle = `translateX(${x}%)`;
+    shadow.style.right = '';
+    shadow.style.left  = '0';
+    shadow.style.borderRadius = '50%';
+    const sc = (pct - 0.5) * 4 - 1;
+    shadow.style.transform = `scaleX(${Math.max(0, sc)})`;
   }
-  /* 满月: 阴影移出, 新月: 阴影在中 */
-  if (pct >= 98) shadowStyle = 'translateX(-100%)'; // 满月 shadow 移走
-  if (pct <= 2)  shadowStyle = 'translateX(0%)';    // 新月 shadow 留住
-
-  shadowEl.style.transform = shadowStyle;
-  nameEl.textContent = info.emoji + '  ' + info.name;
-  ageEl.textContent  = `农历第 ${Math.round(phase)} 天`;
 }
 
-/* 十二时辰吉凶 */
-function getShichenGrid(dayBranchIdx) {
+function getShichenInfo(dayBranchIdx) {
   return SHICHEN_NAMES.map((name, i) => {
-    const deity  = DEITY_CYCLE[(i + dayBranchIdx) % 12];
-    const lucky  = LUCKY_DEITIES.has(deity);
-    const time   = SHICHEN_TIMES[i];
-    return { name, time, deity, lucky, fullName: SHICHEN_FULL[i] };
+    const deityIdx  = (i - dayBranchIdx + 12) % 12;
+    const deity     = DEITY_CYCLE[deityIdx];
+    const isLucky   = LUCKY_DEITIES.has(deity);
+    return { name, time: SHICHEN_TIMES[i], deity, isLucky };
   });
 }
 
 function getCurrentShichenIdx(hour) {
-  return Math.floor(((hour + 1) % 24) / 2);
+  if (hour >= 23 || hour < 1)  return 0;
+  return Math.floor((hour - 1) / 2) + 1;
 }
 
-/* ================================================================
-   渲染黄历数据
-================================================================ */
+/* =============================================
+   渲染黄历
+   ============================================= */
 function render() {
-  const today   = new Date();
-  const year    = today.getFullYear();
-  const month   = today.getMonth() + 1;
-  const day     = today.getDate();
-  const weekday = WEEKDAYS[today.getDay()];
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth() + 1;
+  const d = today.getDate();
 
-  const ygz = getYearGanzhi(year);
-  const mgz = getMonthGanzhi(year, month, day);
-  const dgz = getDayGanzhi(year, month, day);
+  // 日期基础
+  document.getElementById('dayNumber').textContent = String(d).padStart(2, '0');
+  document.getElementById('yearLabel').textContent  = `${y}年${m}月`;
 
-  const termToday   = getSolarTerm(month, day);
-  const termNearest = getNearestSolarTerm(month, day);
-  const jiChuName   = getJiChu(mgz.branchIdx, dgz.branchIdx);
-  const yiji        = JICHU_YIJI[jiChuName];
-  const luck        = JICHU_LUCK[jiChuName];
-  const nayin       = getNayin(dgz.stemIdx, dgz.branchIdx);
-  const chongZ      = CHONG_ZODIAC[dgz.branchIdx];
-  const chongB      = BRANCHES[(dgz.branchIdx+6)%12];
-  const lunar       = getLunarDate(today);
+  // 农历日期
+  const lunarFmt = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { month: 'long', day: 'numeric' });
+  document.getElementById('lunarDate').textContent = '农历 ' + lunarFmt.format(today);
 
-  const mm = String(month).padStart(2,'0');
-  const dd = String(day).padStart(2,'0');
+  // 干支
+  const yearGZ  = getYearGanzhi(y);
+  const monthGZ = getMonthGanzhi(y, m);
+  const dayData = getDayGanzhi(today);
+  const { gz: dayGZ, stem: dayStemIdx, bran: dayBranIdx } = dayData;
 
-  document.getElementById('yearLabel').textContent =
-    `${year} 年　${ygz.ganzhi} 年　${ygz.zodiac}年`;
-  document.getElementById('dayNumber').textContent = `${mm}·${dd}`;
-
-  const lunarEl = document.getElementById('lunarDate');
-  if (lunar.ok && lunar.monthStr) {
-    lunarEl.innerHTML = `农历 ${lunar.monthStr}${lunar.dayStr}&ensp;<span class="weekday-tag">${weekday}</span>`;
-  } else {
-    lunarEl.innerHTML = weekday;
-  }
-
-  const ganzhiRow = document.getElementById('ganzhiRow');
-  [`${ygz.ganzhi}年`, `${mgz.ganzhi}月`, `${dgz.ganzhi}日`].forEach(text => {
-    const span = document.createElement('span');
-    span.className = 'gz-item';
-    span.textContent = text;
-    ganzhiRow.appendChild(span);
+  const zodiac = ZODIACS[((y - 4) % 12 + 12) % 12];
+  const rowEl  = document.getElementById('ganzhiRow');
+  rowEl.innerHTML = '';
+  [
+    `${yearGZ}年【${zodiac}】`,
+    `${monthGZ}月`,
+    `${dayGZ}日`,
+  ].forEach(txt => {
+    const sp = document.createElement('span');
+    sp.className = 'gz-item';
+    sp.textContent = txt;
+    rowEl.appendChild(sp);
   });
 
-  if (termToday?.exact) {
-    const badge = document.getElementById('jieqiBadge');
-    badge.textContent = `✦  今日${termToday.name}`;
+  // 节气
+  const term  = getSolarTerm(m, d);
+  const badge = document.getElementById('jieqiBadge');
+  if (term) {
+    badge.textContent = term;
     badge.classList.add('visible');
     requestAnimationFrame(() => { badge.style.opacity = '1'; });
   }
+  document.getElementById('jieqiInfo').textContent = term || '无';
 
-  renderTags('yiList', yiji.yi, 'yi-tag', 0.85);
-  renderTags('jiList', yiji.ji, 'ji-tag', 0.85);
+  // 建除
+  const monthBranIdx = ((m + 1) % 12);
+  const jianchu      = getJianchu(dayBranIdx, monthBranIdx);
 
-  document.getElementById('wuxing').textContent    = nayin;
-  document.getElementById('chong').textContent     = `冲${chongZ}(${chongB})`;
-  document.getElementById('zhishen').textContent   = jiChuName;
-  document.getElementById('luck').textContent      = luck;
-  document.getElementById('jieqiInfo').textContent = termToday?.exact ? termToday.name : (termNearest||'—');
-
-  /* 月相 */
-  const moonPhase = getMoonPhase(today);
-  renderMoon(moonPhase);
-
-  /* 彭祖百忌 */
-  document.getElementById('pengzuStem').textContent   = PENG_ZU_STEM[dgz.stemIdx];
-  document.getElementById('pengzuBranch').textContent = PENG_ZU_BRANCH[dgz.branchIdx];
-
-  /* 十二时辰吉凶 */
-  renderShichenGrid(dgz.branchIdx, today.getHours());
-}
-
-function renderTags(containerId, items, cls, baseDelay) {
-  const container = document.getElementById(containerId);
-  items.forEach((item, i) => {
-    const tag = document.createElement('span');
-    tag.className = `tag ${cls}`;
-    tag.textContent = item;
-    tag.style.animationDelay = `${baseDelay + i*0.07}s`;
-    container.appendChild(tag);
+  document.getElementById('yiList').innerHTML = '';
+  document.getElementById('jiList').innerHTML  = '';
+  (JIANCHU_YI[jianchu] || []).forEach((t, i) => {
+    const el = document.createElement('span');
+    el.className = 'tag yi-tag';
+    el.textContent = t;
+    el.style.animationDelay = `${i * 0.07}s`;
+    document.getElementById('yiList').appendChild(el);
   });
+  (JIANCHU_JI[jianchu] || []).forEach((t, i) => {
+    const el = document.createElement('span');
+    el.className = 'tag ji-tag';
+    el.textContent = t;
+    el.style.animationDelay = `${i * 0.07}s`;
+    document.getElementById('jiList').appendChild(el);
+  });
+
+  // 纳音
+  const gz60 = ((dayStemIdx % 10) + (dayBranIdx % 12 < 0 ? 12 : 0));
+  const gz60i = (dayStemIdx * 6 + Math.floor(dayBranIdx / 2)) % 30;
+  document.getElementById('wuxing').textContent = NAYIN[gz60i] || NAYIN[0];
+
+  // 冲煞
+  const chongBranIdx = (dayBranIdx + 6) % 12;
+  document.getElementById('chong').textContent = `冲${ZODIACS[chongBranIdx]}（${EARTHLY_BRANCHES[chongBranIdx]}）`;
+
+  // 值神 & 运势
+  document.getElementById('zhishen').textContent = jianchu;
+  const luckVal = LUCK_LEVEL[jianchu] || 3;
+  document.getElementById('luck').textContent = LUCK_TEXT[luckVal];
+
+  // 月相
+  const phase    = getMoonPhase(today);
+  const phaseObj = getMoonPhaseName(phase);
+  document.getElementById('moonName').textContent = `${phaseObj.emoji} ${phaseObj.name}`;
+  document.getElementById('moonAge').textContent  = `月龄 ${phase.toFixed(1)} 天`;
+  renderMoon(phase);
+
+  // 彭祖
+  document.getElementById('pengzuStem').textContent   = PENG_ZU_STEM[dayStemIdx];
+  document.getElementById('pengzuBranch').textContent = PENG_ZU_BRANCH[dayBranIdx];
+
+  // 十二时辰
+  renderShichenGrid(dayBranIdx);
 }
 
-function renderShichenGrid(dayBranchIdx, hour) {
-  const grid    = document.getElementById('shichenGrid');
-  const currentIdx = getCurrentShichenIdx(hour);
-  const items   = getShichenGrid(dayBranchIdx);
-
+function renderShichenGrid(dayBranIdx) {
+  const grid     = document.getElementById('shichenGrid');
+  const items    = getShichenInfo(dayBranIdx);
+  const hour     = new Date().getHours();
+  const curIdx   = getCurrentShichenIdx(hour);
   grid.innerHTML = '';
-  items.forEach((sc, i) => {
-    const div = document.createElement('div');
-    div.className = `shichen-item ${sc.lucky ? 'lucky' : 'unlucky'}${i===currentIdx?' current':''}`;
-
-    div.innerHTML = `
-      <div class="sc-name">${sc.name}时</div>
-      <div class="sc-time">${sc.time}</div>
-      <div class="sc-deity">${sc.deity}</div>
-      <div class="sc-dot"></div>
+  items.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'shichen-item' +
+      (item.isLucky ? ' lucky' : ' unlucky') +
+      (i === curIdx ? ' current' : '');
+    el.innerHTML = `
+      <div class="sh-name">${item.name}</div>
+      <div class="sh-deity">${item.deity}</div>
+      <div class="sh-luck ${item.isLucky ? 'l' : 'u'}">${item.isLucky ? '吉' : '凶'}</div>
     `;
-    div.title = `${sc.fullName} (${sc.time}) · ${sc.deity} · ${sc.lucky?'吉':'凶'}`;
-    grid.appendChild(div);
+    grid.appendChild(el);
   });
 }
 
-/* ================================================================
-   实时时钟（每秒更新 + 时辰高亮更新）
-================================================================ */
 function updateClock() {
-  const now   = new Date();
-  const hh    = String(now.getHours()).padStart(2,'0');
-  const min   = String(now.getMinutes()).padStart(2,'0');
-  const ss    = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('clockTime').textContent    = `${hh} : ${min} : ${ss}`;
-  document.getElementById('clockShichen').textContent = getShichen(now.getHours());
-
-  /* 每分钟整点更新时辰高亮 */
-  if (now.getSeconds() === 0) {
-    const dgz = getDayGanzhi(now.getFullYear(), now.getMonth()+1, now.getDate());
-    renderShichenGrid(dgz.branchIdx, now.getHours());
-  }
+  const now    = new Date();
+  const h      = String(now.getHours()).padStart(2, '0');
+  const mn     = String(now.getMinutes()).padStart(2, '0');
+  const s      = String(now.getSeconds()).padStart(2, '0');
+  const hour   = now.getHours();
+  const scIdx  = getCurrentShichenIdx(hour);
+  const scName = SHICHEN_NAMES[scIdx];
+  document.getElementById('clockTime').textContent    = `${h}:${mn}:${s}`;
+  document.getElementById('clockShichen').textContent = `${scName}时`;
+  setTimeout(updateClock, 1000);
 }
 
-/* ================================================================
-   开屏动画管理
-================================================================ */
+/* =============================================
+   Tab 切换
+   ============================================= */
+function initTabs() {
+  const tabs      = document.querySelectorAll('.tab-btn');
+  const panels    = document.querySelectorAll('.panel');
+  const indicator = document.getElementById('tabIndicator');
+
+  function switchTab(btn) {
+    tabs.forEach(t => t.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const target = document.getElementById('panel-' + btn.dataset.tab);
+    if (target) target.classList.add('active');
+    // 移动指示条
+    const idx = Array.from(tabs).indexOf(btn);
+    indicator.className = 'tab-indicator' + (idx === 1 ? ' right' : '');
+  }
+
+  tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn)));
+}
+
+/* =============================================
+   圣杯功能
+   ============================================= */
+let throwHistory = [];
+let isThrowBusy  = false;
+
+function getRandMsg(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function animateBeiCard(card, isYang, delay) {
+  /* Web Animations API：多圈旋转后落定 */
+  const endY = isYang ? 1440 : 1620; // 1440=4×360(阳), 1620=4.5×360(阴)
+  const lift = 80 + Math.random() * 40;
+  const dur  = 1700 + delay;
+
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const anim = card.animate([
+        { transform: 'rotateY(0deg) translateY(0px) scale(1)', offset: 0 },
+        { transform: `rotateY(${endY * 0.28}deg) translateY(-${lift * 0.7}px) scale(1.08)`, offset: 0.18 },
+        { transform: `rotateY(${endY * 0.55}deg) translateY(-${lift}px) scale(1.12)`, offset: 0.4 },
+        { transform: `rotateY(${endY * 0.78}deg) translateY(-${lift * 0.5}px) scale(1.04)`, offset: 0.65 },
+        { transform: `rotateY(${endY}deg) translateY(6px) scale(.97)`, offset: 0.88 },
+        { transform: `rotateY(${endY}deg) translateY(0px) scale(1)`, offset: 1 },
+      ], {
+        duration: dur,
+        easing: 'cubic-bezier(.25,.46,.45,.94)',
+        fill: 'forwards',
+      });
+      anim.onfinish = resolve;
+    }, delay);
+  });
+}
+
+async function doThrow() {
+  if (isThrowBusy) return;
+  isThrowBusy = true;
+
+  const btn     = document.getElementById('throwBtn');
+  const result  = document.getElementById('beiResult');
+  const card1   = document.getElementById('beiCard1');
+  const card2   = document.getElementById('beiCard2');
+
+  btn.disabled = true;
+  result.classList.add('hidden');
+
+  // 随机结果（前先确定）
+  const r1 = Math.random() < 0.5 ? 'yang' : 'yin';
+  const r2 = Math.random() < 0.5 ? 'yang' : 'yin';
+
+  // 并行动画（card2 稍微延后）
+  await Promise.all([
+    animateBeiCard(card1, r1 === 'yang', 0),
+    animateBeiCard(card2, r2 === 'yang', 180),
+  ]);
+
+  // 判断结果
+  let fateType;
+  if (r1 !== r2)           fateType = 'sheng';
+  else if (r1 === 'yang')  fateType = 'xiao';
+  else                     fateType = 'yin';
+
+  // 展示结果
+  document.getElementById('resultIcon').textContent = BEI_ICONS[fateType];
+  const nameEl = document.getElementById('resultName');
+  nameEl.textContent = BEI_NAMES[fateType];
+  nameEl.className   = 'result-name ' + (fateType === 'yin' ? 'yin-r' : fateType);
+  document.getElementById('resultMsg').textContent = getRandMsg(BEI_MESSAGES[fateType]);
+
+  result.classList.remove('hidden');
+
+  // 历史记录
+  throwHistory.unshift({ type: fateType, time: new Date() });
+  if (throwHistory.length > 7) throwHistory.pop();
+  renderHistory();
+
+  // 重置准备下次
+  setTimeout(() => {
+    // 重置杯筊到初始位置（清除 fill:forwards 的效果）
+    card1.style.transform = '';
+    card2.style.transform = '';
+    card1.getAnimations().forEach(a => a.cancel());
+    card2.getAnimations().forEach(a => a.cancel());
+
+    btn.disabled   = false;
+    isThrowBusy    = false;
+  }, 600);
+}
+
+function renderHistory() {
+  const wrap = document.getElementById('historyDots');
+  wrap.innerHTML = '';
+  throwHistory.forEach((rec, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'history-dot';
+    dot.style.animationDelay = `${i * 0.05}s`;
+
+    const mark = document.createElement('div');
+    const typeClass = rec.type === 'yin' ? 'yin-r' : rec.type;
+    mark.className = `dot-mark ${typeClass}`;
+    const symbols = { sheng:'○', xiao:'◑', yin:'●' };
+    mark.textContent = symbols[rec.type] || '?';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'dot-label';
+    const hr = rec.time.getHours().toString().padStart(2,'0');
+    const mn = rec.time.getMinutes().toString().padStart(2,'0');
+    lbl.textContent = `${hr}:${mn}`;
+
+    dot.appendChild(mark);
+    dot.appendChild(lbl);
+    wrap.appendChild(dot);
+  });
+}
+
+function initShengbei() {
+  document.getElementById('throwBtn').addEventListener('click', doThrow);
+}
+
+/* =============================================
+   开屏动画
+   ============================================= */
 function initIntro() {
   const intro = document.getElementById('intro');
-  if (!intro) return;
-  const INTRO_DURATION = 2400;
   setTimeout(() => {
-    intro.style.transition  = 'opacity 0.65s ease';
-    intro.style.opacity     = '0';
-    intro.style.pointerEvents = 'none';
-  }, INTRO_DURATION);
-  setTimeout(() => intro.remove(), INTRO_DURATION + 700);
-  setTimeout(() => document.body.classList.add('revealed'), INTRO_DURATION + 100);
+    intro.classList.add('hidden');
+    document.body.classList.add('revealed');
+  }, 2200);
 }
 
-/* ================================================================
-   古筝音效 — Web Audio API 五声调式
-================================================================ */
-class GuzhengPlayer {
-  constructor() {
-    this.ctx       = null;
-    this.master    = null;
-    this.reverb    = null;
-    this.playing   = false;
-    this.timerId   = null;
-    this.nextTime  = 0;
-  }
-
-  _init() {
-    if (this.ctx) return;
-    this.ctx    = new (window.AudioContext || window.webkitAudioContext)();
-    this.master = this.ctx.createGain();
-    this.master.gain.value = 0.45;
-    this.master.connect(this.ctx.destination);
-    this.reverb = this._makeReverb();
-  }
-
-  _makeReverb() {
-    const ctx    = this.ctx;
-    const rate   = ctx.sampleRate;
-    const len    = rate * 2.5;
-    const buf    = ctx.createBuffer(2, len, rate);
-    for (let ch = 0; ch < 2; ch++) {
-      const d = buf.getChannelData(ch);
-      for (let i = 0; i < len; i++) {
-        d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.5);
-      }
-    }
-    const conv  = ctx.createConvolver();
-    conv.buffer = buf;
-    const g     = ctx.createGain();
-    g.gain.value = 0.28;
-    conv.connect(g);
-    g.connect(this.master);
-    return conv;
-  }
-
-  _pluck(freq, time, vol = 0.22) {
-    const ctx  = this.ctx;
-    /* 基音 (三角波) + 高八度泛音 (正弦) */
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const g    = ctx.createGain();
-
-    osc1.type = 'triangle';
-    osc1.frequency.value = freq;
-    osc2.type = 'sine';
-    osc2.frequency.value = freq * 2.003;
-
-    const g2 = ctx.createGain();
-    g2.gain.value = 0.28;
-    osc2.connect(g2);
-    g2.connect(g);
-    osc1.connect(g);
-
-    /* 古筝拨弦包络: 极快起音 → 缓慢衰减 */
-    g.gain.setValueAtTime(0, time);
-    g.gain.linearRampToValueAtTime(vol, time + 0.006);
-    g.gain.exponentialRampToValueAtTime(vol * 0.65, time + 0.08);
-    g.gain.exponentialRampToValueAtTime(0.0008, time + 2.8);
-
-    g.connect(this.master);
-    g.connect(this.reverb);
-
-    osc1.start(time); osc1.stop(time + 3.2);
-    osc2.start(time); osc2.stop(time + 3.2);
-  }
-
-  _schedule() {
-    if (!this.playing) return;
-    /* 五声音阶 C 调: 宫商角徵羽 */
-    const SCALE = [
-      261.63, 293.66, 329.63, 392.00, 440.00,   // C4 D4 E4 G4 A4
-      523.25, 587.33, 659.25, 783.99, 880.00,    // C5 D5 E5 G5 A5
-      1046.50, 1174.66                            // C6 D6
-    ];
-
-    const now = this.ctx.currentTime;
-    let t = Math.max(now, this.nextTime);
-
-    /* 随机乐句 (3-6 音) */
-    const phraseLen = 3 + Math.floor(Math.random() * 4);
-    for (let i = 0; i < phraseLen; i++) {
-      const freq = SCALE[Math.floor(Math.random() * SCALE.length)];
-      const vol  = 0.14 + Math.random() * 0.18;
-      this._pluck(freq, t, vol);
-
-      /* 30% 概率同时拨第二根弦 (和声) */
-      if (Math.random() < 0.3) {
-        this._pluck(SCALE[Math.floor(Math.random()*SCALE.length)], t+0.04, vol*0.65);
-      }
-      t += 0.28 + Math.random() * 0.85;
-    }
-
-    this.nextTime = t + 1.2 + Math.random() * 2.5;
-    const delay   = (this.nextTime - now) * 1000 - 600;
-    this.timerId  = setTimeout(() => this._schedule(), Math.max(delay, 800));
-  }
-
-  start() {
-    this._init();
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-    this.playing  = true;
-    this.nextTime = this.ctx.currentTime;
-    this.master.gain.setTargetAtTime(0.45, this.ctx.currentTime, 0.3);
-    this._schedule();
-  }
-
-  stop() {
-    this.playing = false;
-    if (this.timerId) clearTimeout(this.timerId);
-    if (this.master) this.master.gain.setTargetAtTime(0, this.ctx.currentTime, 0.4);
-  }
-}
-
-const player = new GuzhengPlayer();
-
-function initMusic() {
-  const btn     = document.getElementById('musicToggle');
-  const labelEl = document.getElementById('musicLabel');
-  let   active  = localStorage.getItem('guzheng') === 'on';
-
-  function applyState() {
-    if (active) {
-      btn.classList.add('active');
-      btn.classList.remove('muted');
-      labelEl.textContent = '乐';
-      player.start();
-    } else {
-      btn.classList.remove('active');
-      btn.classList.add('muted');
-      labelEl.textContent = '静';
-      player.stop();
-    }
-    localStorage.setItem('guzheng', active ? 'on' : 'off');
-  }
-
-  btn.addEventListener('click', e => {
-    e.stopPropagation(); // 不计入彩蛋点击
-    active = !active;
-    applyState();
-  });
-
-  /* 初始状态：默认静音（首次访问）*/
-  if (active) applyState();
-  else btn.classList.add('muted');
-}
-
-/* ================================================================
-   Canvas 背景：水墨粒子 + 落叶
-================================================================ */
+/* =============================================
+   背景画布（水墨粒子 + 落叶）
+   ============================================= */
 function initBgCanvas() {
   const canvas = document.getElementById('bgCanvas');
   const ctx    = canvas.getContext('2d');
+  let W, H;
+  const particles = [];
+  const leaves    = [];
 
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  const LEAF_COLORS = ['#c9a84c','#a07030','#8a5c1a','#7a4c10','#c0392b'];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
   resize();
   window.addEventListener('resize', resize);
 
-  const inkParticles = Array.from({length:22}, () => mkInk());
+  // 水墨粒子
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * 1, y: Math.random() * 1,
+      r: 0.5 + Math.random() * 1.8,
+      a: 0.02 + Math.random() * 0.06,
+      da: (Math.random() - 0.5) * 0.001,
+      dx: (Math.random() - 0.5) * 0.0002,
+      dy: -0.00005 - Math.random() * 0.0001,
+    });
+  }
 
-  function mkInk() {
-    const g = Math.random() < 0.25;
+  function mkLeaf() {
     return {
-      x: Math.random()*canvas.width, y: Math.random()*canvas.height,
-      r: Math.random()*70+30, vx:(Math.random()-.5)*.16, vy:(Math.random()-.5)*.16,
-      alpha: Math.random()*.11+.02, color: g?[201,168,76]:[60,35,20],
-      pulse: Math.random()*Math.PI*2, pulseSpeed: .003+Math.random()*.004
+      x: 0.05 + Math.random() * 0.9,
+      y: -0.05,
+      r: 4 + Math.random() * 5,
+      rot: Math.random() * Math.PI * 2,
+      drot: (Math.random() - 0.5) * 0.03,
+      dx: (Math.random() - 0.5) * 0.001,
+      dy: 0.0004 + Math.random() * 0.0003,
+      wobble: Math.random() * Math.PI * 2,
+      color: LEAF_COLORS[Math.floor(Math.random() * LEAF_COLORS.length)],
+      alpha: 0.5 + Math.random() * 0.4,
     };
   }
 
-  const leaves = Array.from({length:14}, () => mkLeaf(true));
-  function mkLeaf(scattered) {
-    const c = LEAF_COLORS[Math.floor(Math.random()*LEAF_COLORS.length)];
-    return {
-      x: Math.random()*(canvas.width||window.innerWidth),
-      y: scattered ? Math.random()*(canvas.height||window.innerHeight) : -20-Math.random()*80,
-      size: 6+Math.random()*9, vx:(Math.random()-.5)*.6,
-      vy: .6+Math.random()*1.4, rotation: Math.random()*Math.PI*2,
-      rotSpeed: (Math.random()-.5)*.035, wobble: Math.random()*Math.PI*2,
-      wobbleAmp: .3+Math.random()*.5, wobbleSpd: .012+Math.random()*.018,
-      color: c, alpha: .35+Math.random()*.45
-    };
-  }
-
-  function drawLeaf(ctx, l) {
+  function drawLeaf(l) {
+    const x = l.x * W;
+    const y = l.y * H;
     ctx.save();
     ctx.globalAlpha = l.alpha;
-    ctx.translate(l.x, l.y);
-    ctx.rotate(l.rotation);
+    ctx.translate(x, y);
+    ctx.rotate(l.rot);
     ctx.beginPath();
-    ctx.moveTo(0, -l.size);
-    ctx.bezierCurveTo( l.size*.65,-l.size*.4,  l.size*.65, l.size*.4, 0,  l.size);
-    ctx.bezierCurveTo(-l.size*.65, l.size*.4, -l.size*.65,-l.size*.4, 0, -l.size);
-    ctx.fillStyle = `rgb(${l.color[0]},${l.color[1]},${l.color[2]})`;
+    ctx.moveTo(0, -l.r);
+    ctx.bezierCurveTo(l.r * 1.2, -l.r * 0.6, l.r * 0.8, l.r * 0.4, 0, l.r);
+    ctx.bezierCurveTo(-l.r * 0.8, l.r * 0.4, -l.r * 1.2, -l.r * 0.6, 0, -l.r);
+    ctx.fillStyle = l.color;
     ctx.fill();
-    ctx.beginPath(); ctx.moveTo(0,-l.size*.8); ctx.lineTo(0,l.size*.8);
-    ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=.5; ctx.stroke();
     ctx.restore();
   }
 
-  function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+  let leafTimer = 0;
 
-    inkParticles.forEach(p => {
-      p.pulse += p.pulseSpeed;
-      const r = p.r*(1+.08*Math.sin(p.pulse));
-      const a = p.alpha*(.85+.15*Math.sin(p.pulse+1));
-      const [R,G,B] = p.color;
-      const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r);
-      g.addColorStop(0,`rgba(${R},${G},${B},${a})`);
-      g.addColorStop(.5,`rgba(${R},${G},${B},${a*.35})`);
-      g.addColorStop(1,`rgba(${R},${G},${B},0)`);
-      ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
-      ctx.fillStyle=g; ctx.fill();
-      p.x+=p.vx; p.y+=p.vy;
-      if(p.x<-p.r)p.x=canvas.width+p.r;
-      if(p.x>canvas.width+p.r)p.x=-p.r;
-      if(p.y<-p.r)p.y=canvas.height+p.r;
-      if(p.y>canvas.height+p.r)p.y=-p.r;
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+
+    // 粒子
+    particles.forEach(p => {
+      p.x  = (p.x + p.dx + 1) % 1;
+      p.y  = (p.y + p.dy + 1) % 1;
+      p.a  = Math.max(0.01, Math.min(0.12, p.a + p.da));
+      if (p.a <= 0.01 || p.a >= 0.12) p.da *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x * W, p.y * H, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(201,168,76,${p.a})`;
+      ctx.fill();
     });
 
-    leaves.forEach((l,i) => {
-      l.wobble+=l.wobbleSpd;
-      l.x+=l.vx+Math.sin(l.wobble)*l.wobbleAmp;
-      l.y+=l.vy; l.rotation+=l.rotSpeed;
-      drawLeaf(ctx,l);
-      if(l.y>canvas.height+30||l.x<-60||l.x>canvas.width+60) leaves[i]=mkLeaf(false);
+    // 落叶
+    leafTimer++;
+    if (leafTimer % 90 === 0) leaves.push(mkLeaf());
+    if (leaves.length > 22) leaves.splice(0, 1);
+
+    leaves.forEach((l, i) => {
+      l.wobble += 0.04;
+      l.x  += l.dx + Math.sin(l.wobble) * 0.0005;
+      l.y  += l.dy;
+      l.rot += l.drot;
+      if (l.y > 1.1) leaves.splice(i, 1);
+      drawLeaf(l);
     });
 
-    requestAnimationFrame(draw);
+    requestAnimationFrame(frame);
   }
-  draw();
+  frame();
 }
 
-/* ================================================================
+/* =============================================
    点击特效画布
-================================================================ */
-let clickEffects = [];
-
+   ============================================= */
 function initFxCanvas() {
   const canvas = document.getElementById('fxCanvas');
   const ctx    = canvas.getContext('2d');
+  let W = canvas.width  = window.innerWidth;
+  let H = canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  });
 
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
+  const effects = [];
 
-  function draw() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    clickEffects = clickEffects.filter(p=>p.alpha>0.008);
-    clickEffects.forEach(p => {
-      if (p.type==='ripple') {
-        p.r+=2.2; p.alpha*=.91;
-        if(p.r<=p.maxR){
-          ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-          ctx.strokeStyle=`rgba(${p.color},${p.alpha})`; ctx.lineWidth=1.5; ctx.stroke();
-        }
-      } else if(p.type==='inkDot') {
-        p.x+=p.vx; p.y+=p.vy; p.vx*=p.decay; p.vy*=p.decay; p.vy+=.05; p.alpha*=.93;
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=`rgba(${p.color},${p.alpha})`; ctx.fill();
-      } else if(p.type==='sparkle') {
-        p.x+=p.vx; p.y+=p.vy; p.vy+=.08; p.alpha*=.90; p.r*=.97;
-        ctx.save(); ctx.globalAlpha=p.alpha; ctx.translate(p.x,p.y); ctx.rotate(p.rot+=p.rotSpeed);
+  window.spawnClickEffect = function(x, y) {
+    // 墨晕
+    effects.push({ type:'ripple', x, y, r:0, maxR:60+Math.random()*40, alpha:0.5, life:1 });
+    // 墨滴
+    for (let i = 0; i < 8; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const spd   = 1.5 + Math.random() * 3;
+      effects.push({
+        type:'dot', x, y,
+        vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 1.5,
+        r:  1.5 + Math.random() * 2,
+        alpha: 0.7, life: 1,
+      });
+    }
+    // 金色亮星
+    for (let i = 0; i < 6; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const spd   = 2 + Math.random() * 3;
+      effects.push({
+        type:'spark', x, y,
+        vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 2,
+        r:  1 + Math.random() * 1.5,
+        alpha: 1, life: 1,
+      });
+    }
+  };
+
+  function fxFrame() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = effects.length - 1; i >= 0; i--) {
+      const e = effects[i];
+      if (e.type === 'ripple') {
+        e.r     += 3;
+        e.alpha -= 0.022;
+        e.life   = e.alpha;
         ctx.beginPath();
-        ctx.moveTo(0,-p.r*1.6); ctx.lineTo(p.r*.6,0); ctx.lineTo(0,p.r*1.6); ctx.lineTo(-p.r*.6,0);
-        ctx.closePath(); ctx.fillStyle=`rgba(${p.color},1)`; ctx.fill();
-        ctx.restore();
+        ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(201,168,76,${e.alpha})`;
+        ctx.lineWidth   = 1.5;
+        ctx.stroke();
+      } else if (e.type === 'dot') {
+        e.vy   += 0.15;
+        e.x    += e.vx;
+        e.y    += e.vy;
+        e.alpha -= 0.03;
+        e.life   = e.alpha;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(60,40,10,${e.alpha})`;
+        ctx.fill();
+      } else if (e.type === 'spark') {
+        e.vy   += 0.1;
+        e.x    += e.vx;
+        e.y    += e.vy;
+        e.alpha -= 0.04;
+        e.life   = e.alpha;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220,180,80,${e.alpha})`;
+        ctx.fill();
       }
+      if (e.life <= 0) effects.splice(i, 1);
+    }
+    requestAnimationFrame(fxFrame);
+  }
+  fxFrame();
+}
+
+/* =============================================
+   古筝音乐播放器
+   ============================================= */
+class GuzhengPlayer {
+  constructor() {
+    this._ctx     = null;
+    this._reverb  = null;
+    this._playing = false;
+    this._timer   = null;
+    this._scale   = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 784.00, 880.00];
+  }
+  _init() {
+    if (this._ctx) return;
+    this._ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this._reverb = this._makeReverb(2.5);
+  }
+  _makeReverb(dur) {
+    const sr  = this._ctx.sampleRate;
+    const len = sr * dur;
+    const buf = this._ctx.createBuffer(2, len, sr);
+    for (let c = 0; c < 2; c++) {
+      const d = buf.getChannelData(c);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    }
+    const conv = this._ctx.createConvolver();
+    conv.buffer = buf;
+    conv.connect(this._ctx.destination);
+    return conv;
+  }
+  _pluck(freq, when, vol = 0.35) {
+    const ctx = this._ctx;
+    const osc = ctx.createOscillator();
+    const tri = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.type = 'sine';
+    tri.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, when);
+    tri.frequency.setValueAtTime(freq * 2, when);
+    const blend = ctx.createGain();
+    blend.gain.value = 0.15;
+    tri.connect(blend);
+    blend.connect(g);
+    osc.connect(g);
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(vol, when + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, when + 1.8);
+    g.connect(this._reverb);
+    g.connect(ctx.destination);
+    osc.start(when); osc.stop(when + 2);
+    tri.start(when); tri.stop(when + 2);
+  }
+  _schedule() {
+    if (!this._playing) return;
+    const now = this._ctx.currentTime;
+    const patterns = [
+      [0,2,4,7], [1,3,5,8], [0,4,6,9], [2,5,7,0], [4,6,8,1],
+    ];
+    const pat = patterns[Math.floor(Math.random() * patterns.length)];
+    let t = now;
+    pat.forEach(idx => {
+      const freq = this._scale[idx] * (Math.random() > 0.85 ? 2 : 1);
+      this._pluck(freq, t, 0.25 + Math.random() * 0.15);
+      t += 0.35 + Math.random() * 0.25;
     });
-    requestAnimationFrame(draw);
+    this._timer = setTimeout(() => this._schedule(), (t - now) * 1000 - 200);
   }
-  draw();
-}
-
-function spawnClickEffect(cx, cy) {
-  for(let ring=0; ring<2; ring++){
-    const baseA = ring===0?.55:.3;
-    const col   = ring===0?'201,168,76':'181,38,30';
-    setTimeout(()=>{
-      clickEffects.push({type:'ripple',x:cx,y:cy,r:3,maxR:48+ring*20,alpha:baseA,color:col});
-    }, ring*120);
+  start() {
+    this._init();
+    if (this._ctx.state === 'suspended') this._ctx.resume();
+    this._playing = true;
+    this._schedule();
   }
-  const cnt = 8+Math.floor(Math.random()*5);
-  for(let i=0;i<cnt;i++){
-    const ang = (Math.PI*2*i/cnt)+(Math.random()-.5)*.6;
-    const spd = 2.5+Math.random()*3.5;
-    const rnd = Math.random();
-    const col = rnd<.45?'181,38,30':rnd<.75?'201,168,76':'220,195,150';
-    clickEffects.push({type:'inkDot',x:cx,y:cy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd-1,
-      r:2.5+Math.random()*2,alpha:.75+Math.random()*.25,color:col,decay:.90});
-  }
-  const sc = 3+Math.floor(Math.random()*3);
-  for(let i=0;i<sc;i++){
-    const ang=Math.random()*Math.PI*2, spd=3+Math.random()*3;
-    clickEffects.push({type:'sparkle',x:cx,y:cy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd-2,
-      r:3+Math.random()*3,alpha:.9,color:'240,208,120',rot:Math.random()*Math.PI,
-      rotSpeed:(Math.random()-.5)*.2});
+  stop() {
+    this._playing = false;
+    clearTimeout(this._timer);
   }
 }
 
-/* ================================================================
-   彩蛋：累计点击 50 次 → 显示 lrbnb
-================================================================ */
+function initMusic() {
+  const btn    = document.getElementById('musicToggle');
+  const player = new GuzhengPlayer();
+  let   active = localStorage.getItem('musicOn') !== 'false';
+
+  function update() {
+    btn.classList.toggle('active', active);
+    btn.classList.toggle('muted',  !active);
+    if (active) player.start(); else player.stop();
+    localStorage.setItem('musicOn', active);
+  }
+
+  btn.addEventListener('click', () => { active = !active; update(); });
+  if (active) update();
+}
+
+/* =============================================
+   彩蛋
+   ============================================= */
 function initEasterEgg() {
-  let count   = 0;
-  let shown   = false;
-  const egg   = document.getElementById('easterEgg');
+  let count = 0;
+  const egg = document.getElementById('easterEgg');
+  let   tid = null;
 
-  document.addEventListener('click', e => {
-    /* 音乐按钮不计入 */
-    if (e.target.closest('#musicToggle')) return;
-
+  document.addEventListener('eggClick', () => {
     count++;
-    if (count >= 50 && !shown) {
-      shown = true;
+    if (count >= 50) {
+      count = 0;
       egg.classList.add('show');
-
-      /* 3.5 秒后自动关闭 */
-      setTimeout(() => {
-        egg.classList.remove('show');
-        setTimeout(() => { shown = false; count = 0; }, 500);
-      }, 3500);
+      clearTimeout(tid);
+      tid = setTimeout(() => egg.classList.remove('show'), 3500);
     }
   });
 
-  /* 点击彩蛋本身关闭 */
-  egg.addEventListener('click', () => {
-    egg.classList.remove('show');
-    setTimeout(() => { shown = false; count = 0; }, 500);
-  });
+  egg.addEventListener('click', () => egg.classList.remove('show'));
 }
 
-/* ================================================================
-   统一点击监听（特效 + 彩蛋）
-================================================================ */
+/* =============================================
+   全局点击监听
+   ============================================= */
 function initClickListener() {
   document.addEventListener('click', e => {
     if (e.target.closest('#musicToggle')) return;
-    spawnClickEffect(e.clientX, e.clientY);
+    if (e.target.closest('.tab-btn'))     return;
+    if (e.target.closest('#throwBtn'))    return;
+    if (typeof window.spawnClickEffect === 'function') {
+      window.spawnClickEffect(e.clientX, e.clientY);
+    }
+    document.dispatchEvent(new CustomEvent('eggClick'));
   });
 }
 
-/* ================================================================
+/* =============================================
    启动
-================================================================ */
+   ============================================= */
 (function boot() {
   initIntro();
   initBgCanvas();
   initFxCanvas();
+  initTabs();
+  initShengbei();
   initMusic();
   initEasterEgg();
   initClickListener();
   render();
   updateClock();
-  setInterval(updateClock, 1000);
 })();
