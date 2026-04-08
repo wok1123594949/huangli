@@ -529,8 +529,8 @@ body.revealed .container { animation: fadeUp .7s ease .1s forwards; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 32px;
-  margin-bottom: 36px;
+  gap: 36px;
+  margin-bottom: 40px;
 }
 
 .bei-vs {
@@ -539,86 +539,85 @@ body.revealed .container { animation: fadeUp .7s ease .1s forwards; }
   opacity: .5;
 }
 
-/* 杯筊场景容器 */
+/* 杯筊外层包装（负责飞起动效） */
 .bei-scene {
-  perspective: 480px;
-  width: 68px;
-  height: 108px;
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
 }
 
-/* 杯筊卡片 */
-.bei-card {
+/* 杯筊翻转容器（perspective 在此）*/
+.bei-flipper {
   width: 100%;
   height: 100%;
+  perspective: 320px;
+}
+
+/* 杯筊卡片（负责 rotateY 翻面） */
+.bei-card {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
   position: relative;
   transform-style: preserve-3d;
   cursor: default;
 }
 
-/* 正反面共有 */
+/* 正反面共有——圆形 */
 .bei-face {
   position: absolute;
   inset: 0;
-  border-radius: 34px;
+  border-radius: 50%;
   backface-visibility: hidden;
 }
 
-/* 阳面（凸面/正面）——暖金色木纹 */
+/* 阳面（凸面）——月牙金色 */
 .yang-face {
   background:
-    radial-gradient(ellipse at 32% 22%, rgba(255,240,160,.55) 0%, transparent 48%),
-    linear-gradient(155deg,
-      #e0b84a 0%,
-      #c9962a 30%,
-      #a07218 60%,
-      #7a5210 85%,
-      #5c3c0a 100%);
+    radial-gradient(ellipse at 36% 28%, rgba(255,252,190,.7) 0%, transparent 38%),
+    radial-gradient(circle at 50% 50%, #e8c048 0%, #c49025 38%, #8c6010 68%, #5c3c08 100%);
   box-shadow:
-    3px 5px 18px rgba(0,0,0,.55),
-    inset 2px 2px 8px rgba(255,230,100,.22),
-    inset -3px -4px 12px rgba(0,0,0,.4);
+    0 6px 22px rgba(0,0,0,.55),
+    inset 0 4px 10px rgba(255,220,80,.28),
+    inset 0 -8px 18px rgba(0,0,0,.45),
+    inset -28px 2px 0 8px rgba(11,13,15,.92); /* 月牙阴影 */
 }
 .bei-highlight {
   position: absolute;
-  top: 8%;
-  left: 18%;
-  width: 30%;
-  height: 22%;
-  background: rgba(255,255,255,.18);
+  top: 12%;
+  left: 20%;
+  width: 26%;
+  height: 20%;
+  background: rgba(255,255,255,.22);
   border-radius: 50%;
   filter: blur(5px);
 }
 .bei-grain {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  background: repeating-linear-gradient(
-    170deg,
-    transparent 0px,
-    transparent 6px,
-    rgba(0,0,0,.04) 6px,
-    rgba(0,0,0,.04) 7px
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    rgba(0,0,0,.03) 0deg 3deg,
+    transparent 3deg 6deg
   );
 }
 
-/* 阴面（平面/背面）——深暗木色 */
+/* 阴面（平面）——深暗 */
 .yin-face {
-  background: linear-gradient(155deg, #231808 0%, #170f05 55%, #0c0904 100%);
+  background:
+    radial-gradient(circle at 50% 50%, #2e2210 0%, #1a1008 55%, #0c0804 100%);
   box-shadow:
-    3px 5px 14px rgba(0,0,0,.7),
-    inset 1px 1px 5px rgba(120,80,30,.1);
+    0 4px 16px rgba(0,0,0,.7),
+    inset 0 1px 4px rgba(255,255,255,.03);
   transform: rotateY(180deg);
 }
 .bei-texture {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  background: repeating-linear-gradient(
-    80deg,
-    transparent 0px,
-    transparent 9px,
-    rgba(255,255,255,.015) 9px,
-    rgba(255,255,255,.015) 10px
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    rgba(255,255,255,.015) 0deg 5deg,
+    transparent 5deg 10deg
   );
 }
 

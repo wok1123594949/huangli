@@ -358,28 +358,46 @@ function getRandMsg(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function animateBeiCard(card, isYang, delay) {
-  /* Web Animations API：多圈旋转后落定 */
-  const endY = isYang ? 1440 : 1620; // 1440=4×360(阳), 1620=4.5×360(阴)
-  const lift = 80 + Math.random() * 40;
-  const dur  = 1700 + delay;
+/**
+ * 动画分两层：
+ *  scene（bei-scene）负责上下飞弧 + 轻微倾斜，不影响 3D 翻面
+ *  card（bei-card）  负责 rotateY 翻面，决定阳/阴
+ */
+async function animateBeiCard(scene, card, isYang, delay = 0) {
+  // 先取消上次 fill:forwards 动画，再重置到阳面起始位
+  card.getAnimations().forEach(a => a.cancel());
+  card.style.transform = 'rotateY(0deg)';
 
+  // 等待 delay + 2帧，确保浏览器已应用初始 transform
+  await new Promise(r => setTimeout(r, delay));
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  const endY   = isYang ? 1440 : 1620; // 4×360=阳，4.5×360=阴
+  const lift   = 72 + Math.random() * 28;
+  const tiltZ  = (Math.random() - 0.5) * 22;
+  const DUR    = 1650;
+
+  // scene 动画：飞弧（translateY + 轻微 rotateZ 晃动）
+  scene.animate([
+    { transform: 'translateY(0px) rotateZ(0deg) scale(1)' },
+    { transform: `translateY(-${lift * 0.55}px) rotateZ(${tiltZ * 0.5}deg) scale(1.06)`, offset: 0.22 },
+    { transform: `translateY(-${lift}px) rotateZ(${tiltZ}deg) scale(1.1)`,               offset: 0.45 },
+    { transform: `translateY(-${lift * 0.3}px) rotateZ(${tiltZ * 0.3}deg) scale(1.03)`, offset: 0.72 },
+    { transform: `translateY(7px) rotateZ(0deg) scale(.97)`,                              offset: 0.9 },
+    { transform: 'translateY(0px) rotateZ(0deg) scale(1)' },
+  ], { duration: DUR, easing: 'cubic-bezier(.25,.46,.45,.94)' });
+
+  // card 动画：纯 rotateY 翻面（不混入其他轴）
   return new Promise(resolve => {
-    setTimeout(() => {
-      const anim = card.animate([
-        { transform: 'rotateY(0deg) translateY(0px) scale(1)', offset: 0 },
-        { transform: `rotateY(${endY * 0.28}deg) translateY(-${lift * 0.7}px) scale(1.08)`, offset: 0.18 },
-        { transform: `rotateY(${endY * 0.55}deg) translateY(-${lift}px) scale(1.12)`, offset: 0.4 },
-        { transform: `rotateY(${endY * 0.78}deg) translateY(-${lift * 0.5}px) scale(1.04)`, offset: 0.65 },
-        { transform: `rotateY(${endY}deg) translateY(6px) scale(.97)`, offset: 0.88 },
-        { transform: `rotateY(${endY}deg) translateY(0px) scale(1)`, offset: 1 },
-      ], {
-        duration: dur,
-        easing: 'cubic-bezier(.25,.46,.45,.94)',
-        fill: 'forwards',
-      });
-      anim.onfinish = resolve;
-    }, delay);
+    const anim = card.animate([
+      { transform: 'rotateY(0deg)' },
+      { transform: `rotateY(${endY}deg)` },
+    ], {
+      duration: DUR,
+      easing: 'cubic-bezier(.12,.6,.3,1)',
+      fill: 'forwards',
+    });
+    anim.onfinish = resolve;
   });
 }
 
@@ -387,22 +405,24 @@ async function doThrow() {
   if (isThrowBusy) return;
   isThrowBusy = true;
 
-  const btn     = document.getElementById('throwBtn');
-  const result  = document.getElementById('beiResult');
-  const card1   = document.getElementById('beiCard1');
-  const card2   = document.getElementById('beiCard2');
+  const btn    = document.getElementById('throwBtn');
+  const result = document.getElementById('beiResult');
+  const scene1 = document.getElementById('beiScene1');
+  const scene2 = document.getElementById('beiScene2');
+  const card1  = document.getElementById('beiCard1');
+  const card2  = document.getElementById('beiCard2');
 
   btn.disabled = true;
   result.classList.add('hidden');
 
-  // 随机结果（前先确定）
+  // 提前确定随机结果
   const r1 = Math.random() < 0.5 ? 'yang' : 'yin';
   const r2 = Math.random() < 0.5 ? 'yang' : 'yin';
 
-  // 并行动画（card2 稍微延后）
+  // 并行动画（card2 延后 200ms，更自然）
   await Promise.all([
-    animateBeiCard(card1, r1 === 'yang', 0),
-    animateBeiCard(card2, r2 === 'yang', 180),
+    animateBeiCard(scene1, card1, r1 === 'yang', 0),
+    animateBeiCard(scene2, card2, r2 === 'yang', 200),
   ]);
 
   // 判断结果
@@ -425,17 +445,11 @@ async function doThrow() {
   if (throwHistory.length > 7) throwHistory.pop();
   renderHistory();
 
-  // 重置准备下次
+  // 短暂延迟后解锁（下次掷杯时动画函数内部会重置杯筊）
   setTimeout(() => {
-    // 重置杯筊到初始位置（清除 fill:forwards 的效果）
-    card1.style.transform = '';
-    card2.style.transform = '';
-    card1.getAnimations().forEach(a => a.cancel());
-    card2.getAnimations().forEach(a => a.cancel());
-
-    btn.disabled   = false;
-    isThrowBusy    = false;
-  }, 600);
+    btn.disabled = false;
+    isThrowBusy  = false;
+  }, 500);
 }
 
 function renderHistory() {
