@@ -801,7 +801,6 @@ body.revealed .container { animation: fadeUp .7s ease .1s forwards; }
   margin-bottom: 16px;
 }
 .mishi-map-inner {
-  position: relative;
   width: 100%;
   max-width: 360px;
   aspect-ratio: 1;
@@ -810,27 +809,17 @@ body.revealed .container { animation: fadeUp .7s ease .1s forwards; }
   border: 1px solid rgba(201,168,76,.25);
   box-shadow: 0 4px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.08);
 }
-.mishi-map-img {
+#mishiLeafletMap {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  display: block;
+  background: #0d1520;
 }
-.mishi-markers {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.mishi-marker {
-  position: absolute;
-  transform: translate(-50%, -50%);
+/* Leaflet 自定义marker */
+.mishi-lf-marker {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  cursor: pointer;
-  pointer-events: all;
-  transition: transform .15s, box-shadow .15s, border-color .15s;
-  border: 1.5px solid rgba(255,255,255,.65);
+  border: 1.5px solid rgba(255,255,255,.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -839,27 +828,25 @@ body.revealed .container { animation: fadeUp .7s ease .1s forwards; }
   color: #fff;
   font-family: Arial, sans-serif;
   text-shadow: 0 1px 3px rgba(0,0,0,.9);
-  z-index: 2;
-  user-select: none;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+  box-sizing: border-box;
 }
-.mishi-marker:hover {
-  transform: translate(-50%, -50%) scale(1.45);
-  z-index: 5;
+.mishi-lf-marker:hover,
+.mishi-lf-marker.active {
+  transform: scale(1.45);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.3), 0 0 10px currentColor;
   border-color: #fff;
 }
-.mishi-marker.active {
-  transform: translate(-50%, -50%) scale(1.5);
-  z-index: 6;
-  border-color: #fff;
-  box-shadow: 0 0 0 4px rgba(255,255,255,.25), 0 0 14px currentColor;
-}
-.mishi-marker.risk-high { background: rgba(231,76,60,.88); }
-.mishi-marker.risk-mid  { background: rgba(224,128,48,.88); }
-.mishi-marker.risk-low  { background: rgba(39,174,96,.88); }
-.mishi-marker.active.risk-high { background: #e74c3c; }
-.mishi-marker.active.risk-mid  { background: #e08030; }
-.mishi-marker.active.risk-low  { background: #27ae60; }
-.mishi-marker[hidden] { display: none; }
+.mishi-lf-marker.risk-high { background: rgba(231,76,60,.9); }
+.mishi-lf-marker.risk-mid  { background: rgba(224,128,48,.9); }
+.mishi-lf-marker.risk-low  { background: rgba(39,174,96,.9); }
+.mishi-lf-marker.active.risk-high { background: #e74c3c; }
+.mishi-lf-marker.active.risk-mid  { background: #e08030; }
+.mishi-lf-marker.active.risk-low  { background: #27ae60; }
+/* 隐藏 Leaflet 默认 attribution */
+.leaflet-control-attribution { display: none !important; }
+.leaflet-control-zoom { display: none; }
 .mishi-map-legend {
   display: flex;
   align-items: center;

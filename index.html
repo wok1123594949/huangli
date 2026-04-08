@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
@@ -259,9 +261,8 @@
 
     <!-- 地图区 -->
     <div class="mishi-map-wrap">
-      <div class="mishi-map-inner" id="mishiMapInner">
-        <img class="mishi-map-img" id="mishiMapImg" src="maps/erangel.png" alt="map">
-        <div class="mishi-markers" id="mishiMarkers"></div>
+      <div class="mishi-map-inner">
+        <div id="mishiLeafletMap"></div>
       </div>
       <div class="mishi-map-legend">
         <span class="legend-dot high"></span>高危

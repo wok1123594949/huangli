@@ -307,21 +307,21 @@ const MAPS_CONFIG = {
   erangel: {
     id: 'erangel',
     name: '艾伦格',
-    img: 'maps/erangel.png',
+    tileUrl: 'https://tile.nooblog.top/tile/Erangel/{z}/{x}/{y}.webp',
     subtitle: '艾伦格 · 15 处秘密地下室',
     rooms: MISHI_DATA_ERANGEL,
   },
   taego: {
     id: 'taego',
     name: '泰 戈',
-    img: 'maps/taego.png',
+    tileUrl: 'https://tile.nooblog.top/tile/Taego/{z}/{x}/{y}.webp',
     subtitle: '泰戈 · 12 处秘密地下室',
     rooms: MISHI_DATA_TAEGO,
   },
   rondo: {
     id: 'rondo',
     name: '荣 都',
-    img: 'maps/rondo.png',
+    tileUrl: 'https://tile.nooblog.top/tile/Rondo/{z}/{x}/{y}.webp',
     subtitle: '荣都 · 4 处密室（共享解锁）',
     rooms: MISHI_DATA_RONDO,
   },
@@ -602,9 +602,12 @@ function initTabs() {
     // 移动指示条（支持三挡）
     const idx = Array.from(tabs).indexOf(btn);
     indicator.className = 'tab-indicator' + (INDICATOR_CLASSES[idx] ? ' ' + INDICATOR_CLASSES[idx] : '');
-    // 切入密室面板时确保 marker 已渲染
+    // 切入密室面板时初始化 / 刷新 Leaflet（需 DOM 可见）
     if (btn.dataset.tab === 'mishi') {
-      renderMishiMarkers();
+      requestAnimationFrame(() => {
+        if (!mishiLeaflet) buildLeafletMap(mishiCurrentMap);
+        else mishiLeaflet.invalidateSize();
+      });
     }
   }
 
@@ -1053,41 +1056,105 @@ function initEasterEgg() {
 }
 
 /* =============================================
-   密室攻略 — 图片地图 + DOM Marker + 卡片联动
+   密室攻略 — Leaflet 交互地图 + 卡片联动
    ============================================= */
 
-const RISK_CLASS = { '高': 'high', '中': 'mid', '低': 'low' };
+const RISK_CLASS    = { '高': 'high',    '中': 'mid',    '低': 'low'    };
+const RISK_COLOR_LF = { '高': '#e74c3c', '中': '#e08030', '低': '#27ae60' };
 
 let mishiCurrentMap = 'erangel';
 let mishiActiveId   = null;
 let mishiFilterRisk = 'all';
+let mishiLeaflet    = null;  // Leaflet 地图实例
+let mishiLfMarkers  = {};    // id → Leaflet marker
 
-/* ----- 渲染地图 marker ----- */
-function renderMishiMarkers() {
-  const layer = document.getElementById('mishiMarkers');
-  if (!layer) return;
-  layer.innerHTML = '';
+/* Leaflet CRS.Simple: 每张地图 256×256 像素坐标系，zoom=0 = 1 tile
+   LatLng(y_pix, x_pix) — 但 Leaflet y 轴从下到上，游戏坐标从上到下
+   所以用 LatLng(-y_pix, x_pix) */
+const LF_MAP_SIZE  = 256;     // tile service zoom=0 的地图像素尺寸
+const LF_MIN_ZOOM  = -1;
+const LF_MAX_ZOOM  = 3;
+
+function roomToLatLng(room) {
+  const px = room.x * LF_MAP_SIZE;
+  const py = room.y * LF_MAP_SIZE;
+  return L.latLng(-py, px);
+}
+
+/* ----- 初始化 / 重建 Leaflet 地图 ----- */
+function buildLeafletMap(mapId) {
+  const cfg = MAPS_CONFIG[mapId];
+  const el  = document.getElementById('mishiLeafletMap');
+  if (!el) return;
+
+  // 销毁旧实例
+  if (mishiLeaflet) {
+    mishiLeaflet.remove();
+    mishiLeaflet = null;
+    mishiLfMarkers = {};
+  }
+
+  mishiLeaflet = L.map('mishiLeafletMap', {
+    crs: L.CRS.Simple,
+    minZoom: LF_MIN_ZOOM,
+    maxZoom: LF_MAX_ZOOM,
+    zoomSnap: 0.25,
+    zoomControl: false,
+    attributionControl: false,
+    scrollWheelZoom: true,
+    touchZoom: true,
+    doubleClickZoom: true,
+  });
+
+  // 瓦片层
+  L.tileLayer(cfg.tileUrl, {
+    minZoom: LF_MIN_ZOOM,
+    maxZoom: LF_MAX_ZOOM,
+    tileSize: 256,
+    noWrap: true,
+    bounds: [[ -LF_MAP_SIZE, 0 ], [ 0, LF_MAP_SIZE ]],
+  }).addTo(mishiLeaflet);
+
+  // 适配视野到全图
+  mishiLeaflet.fitBounds([
+    [ -LF_MAP_SIZE, 0 ],
+    [ 0, LF_MAP_SIZE ],
+  ]);
+
+  // 渲染密室标记
+  renderLfMarkers();
+}
+
+/* ----- 渲染 Leaflet Marker ----- */
+function renderLfMarkers() {
+  if (!mishiLeaflet) return;
+
+  // 移除旧 markers
+  Object.values(mishiLfMarkers).forEach(m => m.remove());
+  mishiLfMarkers = {};
 
   const rooms = MAPS_CONFIG[mishiCurrentMap].rooms;
   rooms.forEach(room => {
-    const el = document.createElement('div');
-    const rc = RISK_CLASS[room.risk];
-    el.className = `mishi-marker risk-${rc}${room.id === mishiActiveId ? ' active' : ''}`;
-    el.style.left = `${room.x * 100}%`;
-    el.style.top  = `${room.y * 100}%`;
-    el.textContent = room.id;
-    el.title = room.name;
+    const rc      = RISK_CLASS[room.risk];
+    const isActive = room.id === mishiActiveId;
+    const hidden   = mishiFilterRisk !== 'all' && room.risk !== mishiFilterRisk;
+    if (hidden) return;
 
-    if (mishiFilterRisk !== 'all' && room.risk !== mishiFilterRisk) {
-      el.hidden = true;
-    }
-
-    el.addEventListener('click', e => {
-      e.stopPropagation();
-      if (mishiActiveId === room.id) hideMishiDetail();
-      else showMishiDetail(room);
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="mishi-lf-marker risk-${rc}${isActive ? ' active' : ''}">${room.id}</div>`,
+      iconSize: [22, 22],
+      iconAnchor: [11, 11],
     });
-    layer.appendChild(el);
+
+    const marker = L.marker(roomToLatLng(room), { icon, zIndexOffset: isActive ? 100 : 0 })
+      .addTo(mishiLeaflet)
+      .on('click', () => {
+        if (mishiActiveId === room.id) hideMishiDetail();
+        else showMishiDetail(room);
+      });
+
+    mishiLfMarkers[room.id] = marker;
   });
 }
 
@@ -1097,9 +1164,7 @@ function switchMishiMap(mapId) {
   mishiActiveId   = null;
   mishiFilterRisk = 'all';
 
-  const cfg = MAPS_CONFIG[mapId];
-  document.getElementById('mishiMapImg').src          = cfg.img;
-  document.getElementById('mishiMapSubtitle').textContent = cfg.subtitle;
+  document.getElementById('mishiMapSubtitle').textContent = MAPS_CONFIG[mapId].subtitle;
 
   document.querySelectorAll('.mms-btn').forEach(b =>
     b.classList.toggle('active', b.dataset.map === mapId)
@@ -1110,7 +1175,7 @@ function switchMishiMap(mapId) {
 
   hideMishiDetail();
   renderMishiCards('all');
-  renderMishiMarkers();
+  buildLeafletMap(mapId);
 }
 
 /* ----- 展示详情底栏 ----- */
@@ -1127,15 +1192,23 @@ function showMishiDetail(room) {
   document.getElementById('mdTip').textContent   = room.tip;
 
   document.getElementById('mishiDetail').classList.add('open');
-  renderMishiMarkers();
+  renderLfMarkers();
   highlightMishiCard(room.id);
+  // 地图飞向该密室
+  if (mishiLeaflet) {
+    mishiLeaflet.setView(roomToLatLng(room), 1, { animate: true, duration: 0.5 });
+  }
 }
 
 function hideMishiDetail() {
   document.getElementById('mishiDetail').classList.remove('open');
   mishiActiveId = null;
-  renderMishiMarkers();
+  renderLfMarkers();
   highlightMishiCard(null);
+  // 复位到全图
+  if (mishiLeaflet) {
+    mishiLeaflet.fitBounds([[-LF_MAP_SIZE, 0], [0, LF_MAP_SIZE]], { animate: true });
+  }
 }
 
 /* ----- 卡片高亮 ----- */
@@ -1155,6 +1228,8 @@ function renderMishiCards(filter) {
   const list = mishiFilterRisk === 'all'
     ? allRooms
     : allRooms.filter(r => r.risk === mishiFilterRisk);
+  // 过滤也要重绘地图标记
+  renderLfMarkers();
 
   list.forEach((room, i) => {
     const rc   = RISK_CLASS[room.risk];
@@ -1194,16 +1269,15 @@ function initMishi() {
     document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     renderMishiCards(btn.dataset.risk);
-    renderMishiMarkers();
     hideMishiDetail();
   });
 
   // 详情关闭
   document.getElementById('mishiDetailClose').addEventListener('click', hideMishiDetail);
 
-  // 初始渲染
+  // 初始渲染卡片
   renderMishiCards('all');
-  renderMishiMarkers();
+  // Leaflet 在 initTabs 切换密室 tab 时才初始化（确保 DOM 可见）
 }
 
 /* =============================================
