@@ -70,6 +70,118 @@ const SOLAR_TERMS = [
   {month:12, day:7,  name:'大雪'},{month:12, day:22, name:'冬至'},
 ];
 
+/* =============================================
+   密室攻略数据（艾伦格 15 处）
+   Grid 坐标：列 A-H=0-7，行 I-P=0-7，x/y 为相对位置(0-1)
+   ============================================= */
+const MISHI_DATA = [
+  {
+    id: 1, name: '斯塔伯尔庇护所', area: '斯塔伯尔西北', grid: 'FI',
+    x: 0.688, y: 0.063, risk: '低',
+    entry: '找到地下入口木质障碍，射击/手雷破坏后下楼梯，或使用密室钥匙开启金属门',
+    loot:  '三级头盔、三级甲、AWM 概率约 60%、大量医疗包',
+    tip:   '地处偏远，第三方干扰少，适合开局单人速刷，然后向南旋转圈',
+  },
+  {
+    id: 2, name: '乔治波西北密室', area: '乔治波西北海岸', grid: 'BJ',
+    x: 0.188, y: 0.188, risk: '中',
+    entry: '海岸仓库地下室，木质隔断可用燃烧瓶静默破坏（约 8-10 秒），减少音频暴露',
+    loot:  '三级头盔、三级甲、Groza 概率约 55%、肾上腺素',
+    tip:   '乔治波人多，建议等第一波交火结束后再进，留意建筑二楼有人守点',
+  },
+  {
+    id: 3, name: '塞韦尔尼南密室', area: '塞韦尔尼南部', grid: 'EJ',
+    x: 0.563, y: 0.188, risk: '低',
+    entry: '独立小建筑地下室，密室钥匙开启金属门（消耗钥匙）',
+    loot:  '三级装备、M249 概率约 40%、急救包',
+    tip:   '热门航线较少经过此处，早期物资良好，可与斯塔伯尔形成北线刷取路线',
+  },
+  {
+    id: 4, name: '塔斯纳卡东密室', area: '塔斯纳卡东部', grid: 'GK',
+    x: 0.813, y: 0.313, risk: '低',
+    entry: '农场建筑群东侧地下入口，障碍可用载具撞击破坏',
+    loot:  '三级装备、AWM / Groza 随机一把、大量医疗物资',
+    tip:   '东部地图边缘，人流量少，获取物资后南下走海岸线旋转效率高',
+  },
+  {
+    id: 5, name: '乔治波东密室', area: '乔治波东部', grid: 'CK',
+    x: 0.313, y: 0.313, risk: '中',
+    entry: '乔治波东侧仓库群，金属门需密室钥匙，木门可射击破坏',
+    loot:  '三级装备、Groza 概率约 55%、肾上腺素 × 2-3',
+    tip:   '乔治波与中央之间的过渡区，适合先刷乔治波西北密室再绕行至此',
+  },
+  {
+    id: 6, name: '博物馆西密室', area: '博物馆西侧', grid: 'FL',
+    x: 0.688, y: 0.438, risk: '低',
+    entry: '博物馆建筑西翼地下室，使用密室钥匙或燃烧瓶破坏木质屏障',
+    loot:  '三级头盔、三级甲、AWM 概率约 60%、急救包',
+    tip:   '天然掩体多，博物馆建筑提供良好防御，进出路线规划好可实现零伤入场',
+  },
+  {
+    id: 7, name: '医院南密室', area: '医院南侧', grid: 'BL',
+    x: 0.188, y: 0.438, risk: '中',
+    entry: '医院南侧地下入口，钥匙开启或射击破坏木质门（声音约 100m 可听见）',
+    loot:  '三级装备、Groza / M249 随机、高密度医疗物资',
+    tip:   '医院刷新大量钥匙，先在医院收集钥匙再进密室效率极高',
+  },
+  {
+    id: 8, name: '波钦基西北密室', area: '波钦基西北', grid: 'CL',
+    x: 0.313, y: 0.438, risk: '高',
+    entry: '波钦基地下室入口位于西北建筑群，钥匙刷新率全图最高，需优先争夺',
+    loot:  '三级头盔、三级甲、AWM 概率约 60%、Groza 概率约 55%、肾上腺素',
+    tip:   '全图人流量最高的密室。进入前务必清除周边威胁，并在门口预设防守位',
+  },
+  {
+    id: 9, name: '农场西密室', area: '农场西部', grid: 'EM',
+    x: 0.563, y: 0.563, risk: '中',
+    entry: '农场西侧独立房屋地下室，燃烧瓶静默进入最为推荐',
+    loot:  '三级装备、M249 概率约 40%、急救包 × 3-4',
+    tip:   '农场刷新大量钥匙，可结合波钦基密室规划中央双密室路线（约 90 秒完成）',
+  },
+  {
+    id: 10, name: '水电站东密室', area: '水电站东部', grid: 'GM',
+    x: 0.813, y: 0.563, risk: '中',
+    entry: '水电站东侧建筑地下室，钥匙开启或射击破坏木质门',
+    loot:  '三级装备、AWM 概率约 60%、大量医疗物资',
+    tip:   '适合从东侧海岸路线推进，水电站周围视野开阔，注意提前排查建筑',
+  },
+  {
+    id: 11, name: '渡轮码头北密室', area: '渡轮码头北部', grid: 'CN',
+    x: 0.313, y: 0.688, risk: '低',
+    entry: '码头附近地下室，木质障碍可用载具静默撞击破坏',
+    loot:  '三级装备、Groza / M249 随机一把、医疗物资',
+    tip:   '沿海位置，水路旋转方便，适合单人沿海岸线串联多个低危密室',
+  },
+  {
+    id: 12, name: '普里莫尔斯克西北密室', area: '普里莫尔斯克西北', grid: 'BN',
+    x: 0.188, y: 0.688, risk: '低',
+    entry: '海岸建筑地下室，密室钥匙开启（钥匙一次性消耗）',
+    loot:  '三级装备、AWM 概率约 60%、肾上腺素',
+    tip:   '地图南部边缘，后期圈位可能不利，务必提前确认安全区再前往',
+  },
+  {
+    id: 13, name: '军事基地北密室', area: '军事基地北区岛', grid: 'EN',
+    x: 0.563, y: 0.688, risk: '高',
+    entry: '军事基地北侧建筑地下入口，钥匙在营房高密度刷新',
+    loot:  '三级头盔、三级甲、AWM + Groza 双概率、肾上腺素 × 3',
+    tip:   '军事基地三密室中风险最低，可作为基地落点后第一优先目标',
+  },
+  {
+    id: 14, name: '军事基地西密室', area: '军事基地西区岛', grid: 'EO',
+    x: 0.500, y: 0.813, risk: '高',
+    entry: '军事基地西侧建筑地下室，需先控制西侧制高点确保安全再进入',
+    loot:  '三级装备、Groza 概率约 55%、M249 概率约 40%、大量医疗包',
+    tip:   '需配合北密室一起争夺，建议队伍两人掩护一人刷取，分工明确',
+  },
+  {
+    id: 15, name: '军事基地东密室', area: '军事基地东区岛', grid: 'FO',
+    x: 0.688, y: 0.813, risk: '高',
+    entry: '军事基地东侧建筑地下室，AWM / Groza 刷新率全图最高',
+    loot:  '三级头盔、三级甲、AWM 概率 ~60%、Groza 概率 ~55%、肾上腺素',
+    tip:   '军事基地最佳战利品密室，但也是争夺最激烈的区域，需 4 人队伍协同',
+  },
+];
+
 /* 圣杯消息池 */
 const BEI_MESSAGES = {
   sheng: [
@@ -334,15 +446,21 @@ function initTabs() {
   const panels    = document.querySelectorAll('.panel');
   const indicator = document.getElementById('tabIndicator');
 
+  const INDICATOR_CLASSES = ['', 'mid', 'right'];
+
   function switchTab(btn) {
     tabs.forEach(t => t.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     const target = document.getElementById('panel-' + btn.dataset.tab);
     if (target) target.classList.add('active');
-    // 移动指示条
+    // 移动指示条（支持三挡）
     const idx = Array.from(tabs).indexOf(btn);
-    indicator.className = 'tab-indicator' + (idx === 1 ? ' right' : '');
+    indicator.className = 'tab-indicator' + (INDICATOR_CLASSES[idx] ? ' ' + INDICATOR_CLASSES[idx] : '');
+    // 密室面板切入时重绘 Canvas（display:none 时 canvas 尺寸为 0）
+    if (btn.dataset.tab === 'mishi') {
+      requestAnimationFrame(() => drawMishiMap(mishiActiveId));
+    }
   }
 
   tabs.forEach(btn => btn.addEventListener('click', () => switchTab(btn)));
@@ -790,6 +908,233 @@ function initEasterEgg() {
 }
 
 /* =============================================
+   密室攻略 — Canvas 迷你地图 + 卡片 + 联动
+   ============================================= */
+
+const RISK_COLOR = { '高': '#e74c3c', '中': '#e08030', '低': '#27ae60' };
+const RISK_CLASS = { '高': 'high',    '中': 'mid',      '低': 'low' };
+
+let mishiActiveId    = null;   // 当前高亮密室 id
+let mishiFilterRisk  = 'all';  // 当前过滤风险等级
+
+/* ----- Canvas 绘制 ----- */
+function drawMishiMap(highlightId) {
+  const canvas = document.getElementById('mishiCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // 背景
+  ctx.fillStyle = '#0d1017';
+  ctx.fillRect(0, 0, W, H);
+
+  // 网格线（8×8）
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 8; i++) {
+    const x = (i / 8) * W;
+    const y = (i / 8) * H;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // 网格标签（列 A-H，行 I-P）
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.font = '9px Noto Sans SC, sans-serif';
+  ctx.textAlign = 'center';
+  'ABCDEFGH'.split('').forEach((c, i) => {
+    ctx.fillText(c, ((i + 0.5) / 8) * W, 10);
+  });
+  ctx.textAlign = 'right';
+  'IJKLMNOP'.split('').forEach((c, i) => {
+    ctx.fillText(c, W - 2, ((i + 0.5) / 8) * H + 3);
+  });
+
+  // 关键区域标签
+  const landmarks = [
+    { name: '乔治波', x: 0.18, y: 0.25 },
+    { name: '塞韦尔尼', x: 0.55, y: 0.14 },
+    { name: '波钦基', x: 0.35, y: 0.50 },
+    { name: '军事基地', x: 0.58, y: 0.78 },
+    { name: '水电站', x: 0.78, y: 0.55 },
+    { name: '医院', x: 0.20, y: 0.44 },
+    { name: '博物馆', x: 0.65, y: 0.43 },
+    { name: '农场', x: 0.50, y: 0.55 },
+  ];
+  ctx.font = '8px Noto Sans SC, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(200,180,120,0.25)';
+  landmarks.forEach(lm => {
+    ctx.fillText(lm.name, lm.x * W, lm.y * H);
+  });
+
+  // 军事基地区域轮廓
+  ctx.strokeStyle = 'rgba(231,76,60,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.roundRect(0.44 * W, 0.63 * H, 0.30 * W, 0.24 * H, 4);
+  ctx.stroke();
+
+  // 密室标记
+  MISHI_DATA.forEach(room => {
+    const cx = room.x * W;
+    const cy = room.y * H;
+    const isHL = room.id === highlightId;
+    const color = RISK_COLOR[room.risk];
+    const r = isHL ? 11 : 8;
+
+    // 高亮光晕
+    if (isHL) {
+      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 20);
+      grd.addColorStop(0, color + '50');
+      grd.addColorStop(1, 'transparent');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 外圈
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = isHL ? color : color + 'aa';
+    ctx.fill();
+    ctx.strokeStyle = isHL ? '#fff' : 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = isHL ? 1.5 : 1;
+    ctx.stroke();
+
+    // 编号
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${isHL ? 8 : 7}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(room.id, cx, cy);
+    ctx.textBaseline = 'alphabetic';
+  });
+}
+
+/* ----- 获取 Canvas 上被点击的密室 ----- */
+function getMishiHitRoom(canvas, clientX, clientY) {
+  const rect  = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (clientX - rect.left)  * scaleX;
+  const my = (clientY - rect.top)   * scaleY;
+
+  for (const room of MISHI_DATA) {
+    const dx = mx - room.x * canvas.width;
+    const dy = my - room.y * canvas.height;
+    if (Math.sqrt(dx * dx + dy * dy) <= 14) return room;
+  }
+  return null;
+}
+
+/* ----- 展示详情底栏 ----- */
+function showMishiDetail(room) {
+  mishiActiveId = room.id;
+  const riskClass = RISK_CLASS[room.risk];
+
+  document.getElementById('mdNum').textContent   = `No.${room.id} · ${room.grid} 网格`;
+  document.getElementById('mdName').textContent  = room.name;
+  document.getElementById('mdGrid').innerHTML    = `<span class="risk-badge ${riskClass}">${room.risk}危</span> &nbsp;${room.area}`;
+  document.getElementById('mdRisk').textContent  = `${room.risk}危区域`;
+  document.getElementById('mdEntry').textContent = room.entry;
+  document.getElementById('mdLoot').textContent  = room.loot;
+  document.getElementById('mdTip').textContent   = room.tip;
+
+  document.getElementById('mishiDetail').classList.add('open');
+  drawMishiMap(room.id);
+  highlightMishiCard(room.id);
+}
+
+function hideMishiDetail() {
+  document.getElementById('mishiDetail').classList.remove('open');
+  mishiActiveId = null;
+  drawMishiMap(null);
+  highlightMishiCard(null);
+}
+
+/* ----- 卡片高亮 ----- */
+function highlightMishiCard(id) {
+  document.querySelectorAll('.mishi-card').forEach(el => {
+    el.classList.toggle('active-card', Number(el.dataset.id) === id);
+  });
+}
+
+/* ----- 渲染卡片 ----- */
+function renderMishiCards(filter) {
+  mishiFilterRisk = filter || 'all';
+  const grid = document.getElementById('mishiGrid');
+  grid.innerHTML = '';
+
+  const list = mishiFilterRisk === 'all'
+    ? MISHI_DATA
+    : MISHI_DATA.filter(r => r.risk === mishiFilterRisk);
+
+  list.forEach((room, i) => {
+    const riskClass = RISK_CLASS[room.risk];
+    const card = document.createElement('div');
+    card.className = `mishi-card risk-${riskClass}`;
+    card.dataset.id = room.id;
+    card.style.animationDelay = `${i * 0.04}s`;
+    card.innerHTML = `
+      <div class="mc-num">No.${room.id} · ${room.grid}</div>
+      <div class="mc-name">${room.name}</div>
+      <div class="mc-footer">
+        <span class="mc-grid">${room.area}</span>
+        <span class="risk-badge ${riskClass}">${room.risk}危</span>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      if (mishiActiveId === room.id) { hideMishiDetail(); }
+      else { showMishiDetail(room); }
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ----- 初始化密室面板 ----- */
+function initMishi() {
+  // Canvas 初始绘制
+  drawMishiMap(null);
+
+  // Canvas 点击监听
+  const canvas = document.getElementById('mishiCanvas');
+  canvas.addEventListener('click', e => {
+    const room = getMishiHitRoom(canvas, e.clientX, e.clientY);
+    if (room) {
+      if (mishiActiveId === room.id) hideMishiDetail();
+      else showMishiDetail(room);
+    }
+  });
+
+  // Canvas hover 指针
+  canvas.addEventListener('mousemove', e => {
+    const room = getMishiHitRoom(canvas, e.clientX, e.clientY);
+    canvas.style.cursor = room ? 'pointer' : 'crosshair';
+  });
+
+  // 过滤栏
+  document.getElementById('mishiFilter').addEventListener('click', e => {
+    const btn = e.target.closest('.mf-btn');
+    if (!btn) return;
+    document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMishiCards(btn.dataset.risk);
+    hideMishiDetail();
+  });
+
+  // 详情关闭
+  document.getElementById('mishiDetailClose').addEventListener('click', hideMishiDetail);
+
+  // 初始渲染卡片
+  renderMishiCards('all');
+}
+
+/* =============================================
    全局点击监听
    ============================================= */
 function initClickListener() {
@@ -813,6 +1158,7 @@ function initClickListener() {
   initFxCanvas();
   initTabs();
   initShengbei();
+  initMishi();
   initMusic();
   initEasterEgg();
   initClickListener();

@@ -22,7 +22,7 @@
       <span class="ic" style="--delay:0.66s">地</span>
     </div>
     <div class="intro-line"></div>
-    <div class="intro-sub">黄历 · 圣杯 · 传统智慧</div>
+    <div class="intro-sub">黄历 · 圣杯 · 密室</div>
   </div>
 </div>
 
@@ -77,6 +77,15 @@
         <path d="M7 19 L13 19"/>
       </svg>
       <span>圣 杯</span>
+    </button>
+    <button class="tab-btn" data-tab="mishi">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16">
+        <rect x="2" y="2" width="16" height="16" rx="1.5"/>
+        <circle cx="10" cy="10" r="2.5"/>
+        <path d="M10 2 L10 5M10 15 L10 18M2 10 L5 10M15 10 L18 10"/>
+        <path d="M4.5 4.5 L6.5 6.5M13.5 13.5 L15.5 15.5M15.5 4.5 L13.5 6.5M6.5 13.5 L4.5 15.5"/>
+      </svg>
+      <span>密 室</span>
     </button>
   </nav>
 
@@ -232,6 +241,51 @@
     </div>
 
   </div><!-- /panel-shengbei -->
+
+  <!-- ===== 密室面板 ===== -->
+  <div id="panel-mishi" class="panel">
+
+    <div class="mishi-header">
+      <div class="mishi-title">密 室 攻 略</div>
+      <div class="mishi-sub">艾伦格 · 15 处秘密地下室 · Patch 31.2</div>
+    </div>
+
+    <!-- 迷你地图 -->
+    <div class="mishi-map-wrap">
+      <canvas id="mishiCanvas" width="320" height="320"></canvas>
+      <div class="mishi-map-legend">
+        <span class="legend-dot high"></span>高危
+        <span class="legend-dot mid"></span>中危
+        <span class="legend-dot low"></span>低危
+      </div>
+    </div>
+
+    <!-- 过滤栏 -->
+    <div class="mishi-filter" id="mishiFilter">
+      <button class="mf-btn active" data-risk="all">全 部</button>
+      <button class="mf-btn" data-risk="高">高 危</button>
+      <button class="mf-btn" data-risk="中">中 危</button>
+      <button class="mf-btn" data-risk="低">低 危</button>
+    </div>
+
+    <!-- 卡片列表 -->
+    <div class="mishi-grid" id="mishiGrid"></div>
+
+    <!-- 选中详情弹出 -->
+    <div class="mishi-detail" id="mishiDetail">
+      <div class="md-close" id="mishiDetailClose">✕</div>
+      <div class="md-num" id="mdNum"></div>
+      <div class="md-name" id="mdName"></div>
+      <div class="md-grid" id="mdGrid"></div>
+      <div class="md-rows">
+        <div class="md-row"><span class="md-label">风险</span><span class="md-val" id="mdRisk"></span></div>
+        <div class="md-row"><span class="md-label">进入</span><span class="md-val" id="mdEntry"></span></div>
+        <div class="md-row"><span class="md-label">战利品</span><span class="md-val" id="mdLoot"></span></div>
+        <div class="md-row"><span class="md-label">提示</span><span class="md-val" id="mdTip"></span></div>
+      </div>
+    </div>
+
+  </div><!-- /panel-mishi -->
 
 </div><!-- /container -->
 
