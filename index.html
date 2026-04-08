@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今日黄历</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== 开屏动画层 ===== -->
+<div id="intro" aria-hidden="true">
+  <div class="intro-bg-pulse"></div>
+  <div class="intro-content">
+    <div class="intro-chars">
+      <span class="ic" style="--delay:0s">今</span>
+      <span class="ic" style="--delay:0.25s">日</span>
+      <span class="ic" style="--delay:0.5s">黄</span>
+      <span class="ic" style="--delay:0.75s">历</span>
+    </div>
+    <div class="intro-line"></div>
+    <div class="intro-sub">传统历法 · 今日宜忌</div>
+  </div>
+</div>
+
+<!-- ===== 背景画布：水墨粒子 + 落叶 ===== -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ===== 特效画布：点击墨迹（位于内容之上） ===== -->
+<canvas id="fxCanvas"></canvas>
+
+<!-- ===== 主内容 ===== -->
+<div class="container">
+
+  <!-- 印章 -->
+  <div class="seal">
+    <div class="seal-text">今<br>日<br>历</div>
+  </div>
+
+  <!-- 头部日期区 -->
+  <header class="header">
+    <div class="year-label"  id="yearLabel"></div>
+    <div class="day-number"  id="dayNumber"></div>
+    <div class="lunar-date"  id="lunarDate"></div>
+    <div class="ganzhi-row"  id="ganzhiRow"></div>
+    <div class="jieqi-badge" id="jieqiBadge"></div>
+  </header>
+
+  <!-- 宜忌分隔线 -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-center">今 日 宜 忌</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- 宜忌双栏 -->
+  <div class="yiji-grid">
+    <div class="yiji-card yi-card">
+      <div class="card-title yi-title">宜</div>
+      <div class="tag-list" id="yiList"></div>
+    </div>
+    <div class="yiji-card ji-card">
+      <div class="card-title ji-title">忌</div>
+      <div class="tag-list" id="jiList"></div>
+    </div>
+  </div>
+
+  <!-- 底部信息条 -->
+  <div class="info-bar">
+    <div class="info-item">
+      <div class="info-label">纳音五行</div>
+      <div class="info-value" id="wuxing"></div>
+    </div>
+    <div class="info-divider"></div>
+    <div class="info-item">
+      <div class="info-label">冲 煞</div>
+      <div class="info-value" id="chong"></div>
+    </div>
+    <div class="info-divider"></div>
+    <div class="info-item">
+      <div class="info-label">值 神</div>
+      <div class="info-value" id="zhishen"></div>
+    </div>
+    <div class="info-divider"></div>
+    <div class="info-item">
+      <div class="info-label">今日运势</div>
+      <div class="info-value" id="luck"></div>
+    </div>
+    <div class="info-divider"></div>
+    <div class="info-item">
+      <div class="info-label">节 气</div>
+      <div class="info-value" id="jieqiInfo"></div>
+    </div>
+  </div>
+
+  <!-- 实时时钟 -->
+  <div class="clock">
+    <div class="clock-time"    id="clockTime"></div>
+    <div class="clock-shichen" id="clockShichen"></div>
+  </div>
+
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
