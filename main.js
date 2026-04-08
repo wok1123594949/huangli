@@ -457,9 +457,9 @@ function initTabs() {
     // 移动指示条（支持三挡）
     const idx = Array.from(tabs).indexOf(btn);
     indicator.className = 'tab-indicator' + (INDICATOR_CLASSES[idx] ? ' ' + INDICATOR_CLASSES[idx] : '');
-    // 密室面板切入时重绘 Canvas（display:none 时 canvas 尺寸为 0）
+    // 密室面板切入时重绘 Canvas（等 display:block 生效后再绘，双 rAF 保险）
     if (btn.dataset.tab === 'mishi') {
-      requestAnimationFrame(() => drawMishiMap(mishiActiveId));
+      requestAnimationFrame(() => requestAnimationFrame(() => drawMishiMap(mishiActiveId)));
     }
   }
 
@@ -917,102 +917,132 @@ const RISK_CLASS = { '高': 'high',    '中': 'mid',      '低': 'low' };
 let mishiActiveId    = null;   // 当前高亮密室 id
 let mishiFilterRisk  = 'all';  // 当前过滤风险等级
 
+/* ----- 兼容所有浏览器的圆角矩形 ----- */
+function canvasRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y,     x + w, y + r,     r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x,      y + h, x, y + h - r,    r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x,      y,     x + r, y,         r);
+  ctx.closePath();
+}
+
 /* ----- Canvas 绘制 ----- */
 function drawMishiMap(highlightId) {
   const canvas = document.getElementById('mishiCanvas');
   if (!canvas) return;
+
+  /* 确保 canvas 实际像素尺寸与 HTML 属性一致（防止 CSS 拉伸导致坐标错位）*/
+  const SIZE = 320;
+  if (canvas.width !== SIZE)  canvas.width  = SIZE;
+  if (canvas.height !== SIZE) canvas.height = SIZE;
+
   const ctx = canvas.getContext('2d');
-  const W = canvas.width;
-  const H = canvas.height;
+  const W = SIZE, H = SIZE;
 
   ctx.clearRect(0, 0, W, H);
 
-  // 背景
-  ctx.fillStyle = '#0d1017';
+  /* 背景渐变 */
+  const bgGrd = ctx.createLinearGradient(0, 0, W, H);
+  bgGrd.addColorStop(0, '#0d1017');
+  bgGrd.addColorStop(1, '#111820');
+  ctx.fillStyle = bgGrd;
   ctx.fillRect(0, 0, W, H);
 
-  // 网格线（8×8）
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-  ctx.lineWidth = 1;
-  for (let i = 1; i < 8; i++) {
+  /* 网格线（8×8）*/
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 8; i++) {
     const x = (i / 8) * W;
     const y = (i / 8) * H;
+    ctx.strokeStyle = i === 0 || i === 8
+      ? 'rgba(201,168,76,0.25)'
+      : 'rgba(255,255,255,0.05)';
     ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
   }
 
-  // 网格标签（列 A-H，行 I-P）
-  ctx.fillStyle = 'rgba(255,255,255,0.12)';
-  ctx.font = '9px Noto Sans SC, sans-serif';
+  /* 列标（A-H）*/
+  ctx.fillStyle = 'rgba(201,168,76,0.5)';
+  ctx.font = 'bold 9px Arial, sans-serif';
   ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
   'ABCDEFGH'.split('').forEach((c, i) => {
-    ctx.fillText(c, ((i + 0.5) / 8) * W, 10);
+    ctx.fillText(c, ((i + 0.5) / 8) * W, 3);
   });
-  ctx.textAlign = 'right';
+
+  /* 行标（I-P）*/
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
   'IJKLMNOP'.split('').forEach((c, i) => {
-    ctx.fillText(c, W - 2, ((i + 0.5) / 8) * H + 3);
+    ctx.fillText(c, 3, ((i + 0.5) / 8) * H);
   });
 
-  // 关键区域标签
+  /* 关键地名（英文避免中文字体加载问题）*/
   const landmarks = [
-    { name: '乔治波', x: 0.18, y: 0.25 },
-    { name: '塞韦尔尼', x: 0.55, y: 0.14 },
-    { name: '波钦基', x: 0.35, y: 0.50 },
-    { name: '军事基地', x: 0.58, y: 0.78 },
-    { name: '水电站', x: 0.78, y: 0.55 },
-    { name: '医院', x: 0.20, y: 0.44 },
-    { name: '博物馆', x: 0.65, y: 0.43 },
-    { name: '农场', x: 0.50, y: 0.55 },
+    { name: 'Georgopol',    x: 0.18, y: 0.23 },
+    { name: 'Severny',      x: 0.56, y: 0.13 },
+    { name: 'Pochinki',     x: 0.36, y: 0.49 },
+    { name: 'Mil.Base',     x: 0.57, y: 0.77 },
+    { name: 'Mylta',        x: 0.79, y: 0.54 },
+    { name: 'Hospital',     x: 0.20, y: 0.43 },
+    { name: 'Museum',       x: 0.65, y: 0.42 },
+    { name: 'Farm',         x: 0.52, y: 0.54 },
+    { name: 'Stalber',      x: 0.68, y: 0.08 },
+    { name: 'Primorsk',     x: 0.22, y: 0.72 },
   ];
-  ctx.font = '8px Noto Sans SC, sans-serif';
+  ctx.font = '7.5px Arial, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillStyle = 'rgba(200,180,120,0.25)';
-  landmarks.forEach(lm => {
-    ctx.fillText(lm.name, lm.x * W, lm.y * H);
-  });
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(200,185,130,0.3)';
+  landmarks.forEach(lm => ctx.fillText(lm.name, lm.x * W, lm.y * H));
 
-  // 军事基地区域轮廓
-  ctx.strokeStyle = 'rgba(231,76,60,0.1)';
+  /* 军事基地区域轮廓（手动圆角矩形，兼容旧浏览器）*/
+  ctx.strokeStyle = 'rgba(231,76,60,0.18)';
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.roundRect(0.44 * W, 0.63 * H, 0.30 * W, 0.24 * H, 4);
+  canvasRoundRect(ctx, 0.44 * W, 0.63 * H, 0.30 * W, 0.24 * H, 4);
   ctx.stroke();
 
-  // 密室标记
+  /* 密室标记 */
+  ctx.textBaseline = 'middle';
   MISHI_DATA.forEach(room => {
-    const cx = room.x * W;
-    const cy = room.y * H;
-    const isHL = room.id === highlightId;
+    const cx    = room.x * W;
+    const cy    = room.y * H;
+    const isHL  = room.id === highlightId;
     const color = RISK_COLOR[room.risk];
-    const r = isHL ? 11 : 8;
+    const r     = isHL ? 12 : 9;
 
-    // 高亮光晕
+    /* 光晕 */
     if (isHL) {
-      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 20);
-      grd.addColorStop(0, color + '50');
-      grd.addColorStop(1, 'transparent');
+      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 22);
+      grd.addColorStop(0, color + '66');
+      grd.addColorStop(1, color + '00');
       ctx.fillStyle = grd;
       ctx.beginPath();
-      ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 22, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // 外圈
+    /* 填充圆 */
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = isHL ? color : color + 'aa';
+    ctx.fillStyle = isHL ? color : color + 'bb';
     ctx.fill();
-    ctx.strokeStyle = isHL ? '#fff' : 'rgba(255,255,255,0.4)';
-    ctx.lineWidth = isHL ? 1.5 : 1;
+
+    /* 边框 */
+    ctx.strokeStyle = isHL ? '#ffffff' : 'rgba(255,255,255,0.5)';
+    ctx.lineWidth   = isHL ? 1.5 : 0.8;
     ctx.stroke();
 
-    // 编号
-    ctx.fillStyle = '#fff';
-    ctx.font = `bold ${isHL ? 8 : 7}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    /* 编号 */
+    ctx.fillStyle   = '#fff';
+    ctx.font        = `bold ${isHL ? 9 : 8}px Arial, sans-serif`;
+    ctx.textAlign   = 'center';
     ctx.fillText(room.id, cx, cy);
-    ctx.textBaseline = 'alphabetic';
   });
 }
 
@@ -1098,8 +1128,8 @@ function renderMishiCards(filter) {
 
 /* ----- 初始化密室面板 ----- */
 function initMishi() {
-  // Canvas 初始绘制
-  drawMishiMap(null);
+  // Canvas 延迟初始绘制（panel 可能仍是 display:none，等第一次切 tab 时由 switchTab 触发）
+  // 这里先绑定事件，drawMishiMap 在 switchTab 里会被调用
 
   // Canvas 点击监听
   const canvas = document.getElementById('mishiCanvas');
