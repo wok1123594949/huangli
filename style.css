@@ -770,6 +770,28 @@ body.revealed .container { animation: fadeUp .7s ease .1s forwards; }
   letter-spacing: .12em;
 }
 
+/* 地图选择器 */
+.mishi-map-sel {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.mms-btn {
+  padding: 5px 16px;
+  border: 1.5px solid rgba(201,168,76,.3);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: .78rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .05em;
+}
+.mms-btn:hover  { color: var(--gold); border-color: rgba(201,168,76,.6); }
+.mms-btn.active { color: var(--bg);   background: var(--gold); border-color: var(--gold); }
+
 /* 地图容器 */
 .mishi-map-wrap {
   position: relative;
@@ -778,15 +800,66 @@ body.revealed .container { animation: fadeUp .7s ease .1s forwards; }
   align-items: center;
   margin-bottom: 16px;
 }
-#mishiCanvas {
-  width: 320px;
-  height: 320px;
-  border: 1px solid rgba(201,168,76,.2);
+.mishi-map-inner {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1;
   border-radius: 10px;
-  background: #0d1017;
-  cursor: crosshair;
-  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(201,168,76,.25);
+  box-shadow: 0 4px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.08);
 }
+.mishi-map-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mishi-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.mishi-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: all;
+  transition: transform .15s, box-shadow .15s, border-color .15s;
+  border: 1.5px solid rgba(255,255,255,.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: bold;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+  z-index: 2;
+  user-select: none;
+}
+.mishi-marker:hover {
+  transform: translate(-50%, -50%) scale(1.45);
+  z-index: 5;
+  border-color: #fff;
+}
+.mishi-marker.active {
+  transform: translate(-50%, -50%) scale(1.5);
+  z-index: 6;
+  border-color: #fff;
+  box-shadow: 0 0 0 4px rgba(255,255,255,.25), 0 0 14px currentColor;
+}
+.mishi-marker.risk-high { background: rgba(231,76,60,.88); }
+.mishi-marker.risk-mid  { background: rgba(224,128,48,.88); }
+.mishi-marker.risk-low  { background: rgba(39,174,96,.88); }
+.mishi-marker.active.risk-high { background: #e74c3c; }
+.mishi-marker.active.risk-mid  { background: #e08030; }
+.mishi-marker.active.risk-low  { background: #27ae60; }
+.mishi-marker[hidden] { display: none; }
 .mishi-map-legend {
   display: flex;
   align-items: center;

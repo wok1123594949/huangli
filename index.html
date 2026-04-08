@@ -247,12 +247,22 @@
 
     <div class="mishi-header">
       <div class="mishi-title">密 室 攻 略</div>
-      <div class="mishi-sub">艾伦格 · 15 处秘密地下室 · Patch 31.2</div>
+      <div class="mishi-sub" id="mishiMapSubtitle">艾伦格 · 15 处秘密地下室</div>
     </div>
 
-    <!-- 迷你地图 -->
+    <!-- 地图选择器 -->
+    <div class="mishi-map-sel" id="mishiMapSel">
+      <button class="mms-btn active" data-map="erangel">艾伦格</button>
+      <button class="mms-btn" data-map="taego">泰 戈</button>
+      <button class="mms-btn" data-map="rondo">荣 都</button>
+    </div>
+
+    <!-- 地图区 -->
     <div class="mishi-map-wrap">
-      <canvas id="mishiCanvas" width="320" height="320"></canvas>
+      <div class="mishi-map-inner" id="mishiMapInner">
+        <img class="mishi-map-img" id="mishiMapImg" src="maps/erangel.png" alt="map">
+        <div class="mishi-markers" id="mishiMarkers"></div>
+      </div>
       <div class="mishi-map-legend">
         <span class="legend-dot high"></span>高危
         <span class="legend-dot mid"></span>中危

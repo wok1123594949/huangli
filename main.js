@@ -71,10 +71,10 @@ const SOLAR_TERMS = [
 ];
 
 /* =============================================
-   密室攻略数据（艾伦格 15 处）
-   Grid 坐标：列 A-H=0-7，行 I-P=0-7，x/y 为相对位置(0-1)
+   密室攻略数据
+   x/y 为相对坐标(0-1)，左上角为(0,0)
    ============================================= */
-const MISHI_DATA = [
+const MISHI_DATA_ERANGEL = [
   {
     id: 1, name: '斯塔伯尔庇护所', area: '斯塔伯尔西北', grid: 'FI',
     x: 0.688, y: 0.063, risk: '低',
@@ -181,6 +181,151 @@ const MISHI_DATA = [
     tip:   '军事基地最佳战利品密室，但也是争夺最激烈的区域，需 4 人队伍协同',
   },
 ];
+
+/* ——— 泰戈地图 12 处密室 ——— */
+const MISHI_DATA_TAEGO = [
+  {
+    id: 1, name: '터미널 지하 벙커', area: '航站楼地下', grid: 'D3',
+    x: 0.46, y: 0.17, risk: '中',
+    entry: '航站楼主楼北侧地下入口，射击木质障碍或使用密室钥匙开启',
+    loot:  '三级头盔、三级甲、Mk12 / K2 随机、肾上腺素',
+    tip:   '航站楼人流量大，建议先清楚二楼，再下地下室，提防背刺',
+  },
+  {
+    id: 2, name: '부두 동쪽 창고', area: '釜山码头东仓库', grid: 'G4',
+    x: 0.81, y: 0.39, risk: '高',
+    entry: '码头东侧大型仓库地下室，金属门需密室钥匙，木质隔断可射击破坏',
+    loot:  '三级装备、Mk12 概率 ~65%、Groza、大量医疗包',
+    tip:   '釜山码头全图最热点区域之一，团队需多人协同清点后方可安全进入',
+  },
+  {
+    id: 3, name: '화성 외곽 벙커', area: '华城西北郊', grid: 'C3',
+    x: 0.34, y: 0.24, risk: '低',
+    entry: '独立农仓地下室，燃烧瓶静默破坏木质障碍（约 8 秒）',
+    loot:  '三级装备、K2 概率 ~45%、急救包',
+    tip:   '偏远地带人少，适合单人快速刷取，然后向中央华城旋转',
+  },
+  {
+    id: 4, name: '서북 해안 벙커', area: '西北海岸', grid: 'B2',
+    x: 0.11, y: 0.19, risk: '低',
+    entry: '海岸悬崖下方地下入口，使用密室钥匙开启金属门',
+    loot:  '三级装备、Mk12 / M249 随机、肾上腺素',
+    tip:   '位于地图边缘，第三方干扰极少，推荐水路旋转上岸后直接进入',
+  },
+  {
+    id: 5, name: '서부 사원 지하', area: '西部寺庙', grid: 'B5',
+    x: 0.13, y: 0.47, risk: '低',
+    entry: '寺庙后院地下室，木质隔断可载具静默撞击破坏',
+    loot:  '三级装备、K2 概率 ~40%、急救包 × 3',
+    tip:   '寺庙提供天然掩体，进出安全，适合中线整补点',
+  },
+  {
+    id: 6, name: '중앙 하천 섬', area: '中央河心岛', grid: 'D5',
+    x: 0.38, y: 0.50, risk: '中',
+    entry: '需游泳或载具渡河到达小岛，岛上建筑地下室用密室钥匙开启',
+    loot:  '三级头盔、三级甲、Mk12 + Groza 双概率',
+    tip:   '四面环水，进出皆需过河，视野开阔，注意来自河岸的狙击',
+  },
+  {
+    id: 7, name: '학교 남쪽 밀실', area: '学校南侧', grid: 'E7',
+    x: 0.57, y: 0.73, risk: '高',
+    entry: '学校南侧建筑地下室，金属门需密室钥匙',
+    loot:  '三级装备、Mk12 概率 ~65%、肾上腺素 × 2-3',
+    tip:   '学校与监狱之间高度争夺，进入前务必清除学校内所有威胁',
+  },
+  {
+    id: 8, name: '감옥 동쪽 밀실', area: '监狱东翼', grid: 'F7',
+    x: 0.71, y: 0.65, risk: '高',
+    entry: '监狱东翼地下牢房改造密室，射击或手雷破坏木质大门',
+    loot:  '三级头盔、三级甲、Mk12 + K2 双概率、肾上腺素',
+    tip:   '监狱区争夺激烈，建议落点监狱屋顶先掌控制高权',
+  },
+  {
+    id: 9, name: '서남 마을 창고', area: '西南村落', grid: 'B7',
+    x: 0.17, y: 0.78, risk: '低',
+    entry: '村落谷仓地下室，木质障碍可用燃烧瓶静默破坏',
+    loot:  '三级装备、Groza / K2 随机、急救包',
+    tip:   '西南边缘，人流量少，圈小时物资丰厚但撤退路线受限，提前规划旋转',
+  },
+  {
+    id: 10, name: '부두 남쪽 고지', area: '码头南侧高地', grid: 'G6',
+    x: 0.72, y: 0.56, risk: '中',
+    entry: '高地独立建筑地下室，密室钥匙开启或燃烧瓶破坏',
+    loot:  '三级装备、Mk12 概率 ~50%、大量医疗物资',
+    tip:   '高地视野极佳，进入后先架枪控制周边再打开密室',
+  },
+  {
+    id: 11, name: '동북 산지 벙커', area: '东北山地', grid: 'G3',
+    x: 0.69, y: 0.24, risk: '低',
+    entry: '山地岩石掩体旁地下室，使用密室钥匙开启',
+    loot:  '三级装备、M249 概率 ~40%、急救包',
+    tip:   '地形复杂，第三方难以接近，适合开局抢占后静候时机',
+  },
+  {
+    id: 12, name: '중앙 막사', area: '中央军营', grid: 'E5',
+    x: 0.50, y: 0.57, risk: '中',
+    entry: '军营主楼地下指挥室，金属门需密室钥匙',
+    loot:  '三级头盔、三级甲、Mk12 概率 ~60%、肾上腺素',
+    tip:   '全图中央，旋转最灵活，但也是各路队伍必争之地',
+  },
+];
+
+/* ——— 荣都地图 4 处密室（共享密室钥匙机制）——— */
+const MISHI_DATA_RONDO = [
+  {
+    id: 1, name: '북부 공장 지하', area: '北部工厂', grid: 'D2',
+    x: 0.39, y: 0.23, risk: '高',
+    entry: '工厂主楼地下室，开启任意一处密室后其余三处同时解锁（荣都独特机制）',
+    loot:  '三级头盔、三级甲、ACE32 / FAMAS 高概率、肾上腺素 × 3',
+    tip:   '四处密室同步开启，适合 4 人分散同时刷取，效率极高',
+  },
+  {
+    id: 2, name: '동부 항구 창고', area: '东部港口', grid: 'G5',
+    x: 0.70, y: 0.49, risk: '高',
+    entry: '港口大型仓库地下室，密室钥匙开启后其余三处同步开放',
+    loot:  '三级装备、ACE32 概率 ~70%、大量医疗包',
+    tip:   '港口地形开阔，进入前需彻底清场，留人把风',
+  },
+  {
+    id: 3, name: '남부 상업지구', area: '南部商业街', grid: 'D7',
+    x: 0.43, y: 0.74, risk: '中',
+    entry: '商业街地下停车场改造密室，需密室钥匙',
+    loot:  '三级装备、FAMAS 概率 ~55%、肾上腺素',
+    tip:   '商业街掩体多，但街道纵横容易被侧击，保持小组阵型',
+  },
+  {
+    id: 4, name: '서부 주택가 지하', area: '西部住宅区', grid: 'B5',
+    x: 0.22, y: 0.52, risk: '低',
+    entry: '住宅区地下室，与其他三处共享解锁状态',
+    loot:  '三级装备、ACE32 / FAMAS 随机、急救包 × 4',
+    tip:   '西部相对安静，适合单人先行开启密室后通知队友',
+  },
+];
+
+/* ——— 地图总配置 ——— */
+const MAPS_CONFIG = {
+  erangel: {
+    id: 'erangel',
+    name: '艾伦格',
+    img: 'maps/erangel.png',
+    subtitle: '艾伦格 · 15 处秘密地下室',
+    rooms: MISHI_DATA_ERANGEL,
+  },
+  taego: {
+    id: 'taego',
+    name: '泰 戈',
+    img: 'maps/taego.png',
+    subtitle: '泰戈 · 12 处秘密地下室',
+    rooms: MISHI_DATA_TAEGO,
+  },
+  rondo: {
+    id: 'rondo',
+    name: '荣 都',
+    img: 'maps/rondo.png',
+    subtitle: '荣都 · 4 处密室（共享解锁）',
+    rooms: MISHI_DATA_RONDO,
+  },
+};
 
 /* 圣杯消息池 */
 const BEI_MESSAGES = {
@@ -457,9 +602,9 @@ function initTabs() {
     // 移动指示条（支持三挡）
     const idx = Array.from(tabs).indexOf(btn);
     indicator.className = 'tab-indicator' + (INDICATOR_CLASSES[idx] ? ' ' + INDICATOR_CLASSES[idx] : '');
-    // 密室面板切入时重绘 Canvas（等 display:block 生效后再绘，双 rAF 保险）
+    // 切入密室面板时确保 marker 已渲染
     if (btn.dataset.tab === 'mishi') {
-      requestAnimationFrame(() => requestAnimationFrame(() => drawMishiMap(mishiActiveId)));
+      renderMishiMarkers();
     }
   }
 
@@ -908,182 +1053,88 @@ function initEasterEgg() {
 }
 
 /* =============================================
-   密室攻略 — Canvas 迷你地图 + 卡片 + 联动
+   密室攻略 — 图片地图 + DOM Marker + 卡片联动
    ============================================= */
 
-const RISK_COLOR = { '高': '#e74c3c', '中': '#e08030', '低': '#27ae60' };
-const RISK_CLASS = { '高': 'high',    '中': 'mid',      '低': 'low' };
+const RISK_CLASS = { '高': 'high', '中': 'mid', '低': 'low' };
 
-let mishiActiveId    = null;   // 当前高亮密室 id
-let mishiFilterRisk  = 'all';  // 当前过滤风险等级
+let mishiCurrentMap = 'erangel';
+let mishiActiveId   = null;
+let mishiFilterRisk = 'all';
 
-/* ----- 兼容所有浏览器的圆角矩形 ----- */
-function canvasRoundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.arcTo(x + w, y,     x + w, y + r,     r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-  ctx.lineTo(x + r, y + h);
-  ctx.arcTo(x,      y + h, x, y + h - r,    r);
-  ctx.lineTo(x, y + r);
-  ctx.arcTo(x,      y,     x + r, y,         r);
-  ctx.closePath();
-}
+/* ----- 渲染地图 marker ----- */
+function renderMishiMarkers() {
+  const layer = document.getElementById('mishiMarkers');
+  if (!layer) return;
+  layer.innerHTML = '';
 
-/* ----- Canvas 绘制 ----- */
-function drawMishiMap(highlightId) {
-  const canvas = document.getElementById('mishiCanvas');
-  if (!canvas) return;
+  const rooms = MAPS_CONFIG[mishiCurrentMap].rooms;
+  rooms.forEach(room => {
+    const el = document.createElement('div');
+    const rc = RISK_CLASS[room.risk];
+    el.className = `mishi-marker risk-${rc}${room.id === mishiActiveId ? ' active' : ''}`;
+    el.style.left = `${room.x * 100}%`;
+    el.style.top  = `${room.y * 100}%`;
+    el.textContent = room.id;
+    el.title = room.name;
 
-  /* 确保 canvas 实际像素尺寸与 HTML 属性一致（防止 CSS 拉伸导致坐标错位）*/
-  const SIZE = 320;
-  if (canvas.width !== SIZE)  canvas.width  = SIZE;
-  if (canvas.height !== SIZE) canvas.height = SIZE;
-
-  const ctx = canvas.getContext('2d');
-  const W = SIZE, H = SIZE;
-
-  ctx.clearRect(0, 0, W, H);
-
-  /* 背景渐变 */
-  const bgGrd = ctx.createLinearGradient(0, 0, W, H);
-  bgGrd.addColorStop(0, '#0d1017');
-  bgGrd.addColorStop(1, '#111820');
-  ctx.fillStyle = bgGrd;
-  ctx.fillRect(0, 0, W, H);
-
-  /* 网格线（8×8）*/
-  ctx.lineWidth = 0.5;
-  for (let i = 0; i <= 8; i++) {
-    const x = (i / 8) * W;
-    const y = (i / 8) * H;
-    ctx.strokeStyle = i === 0 || i === 8
-      ? 'rgba(201,168,76,0.25)'
-      : 'rgba(255,255,255,0.05)';
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-  }
-
-  /* 列标（A-H）*/
-  ctx.fillStyle = 'rgba(201,168,76,0.5)';
-  ctx.font = 'bold 9px Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'top';
-  'ABCDEFGH'.split('').forEach((c, i) => {
-    ctx.fillText(c, ((i + 0.5) / 8) * W, 3);
-  });
-
-  /* 行标（I-P）*/
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  'IJKLMNOP'.split('').forEach((c, i) => {
-    ctx.fillText(c, 3, ((i + 0.5) / 8) * H);
-  });
-
-  /* 关键地名（英文避免中文字体加载问题）*/
-  const landmarks = [
-    { name: 'Georgopol',    x: 0.18, y: 0.23 },
-    { name: 'Severny',      x: 0.56, y: 0.13 },
-    { name: 'Pochinki',     x: 0.36, y: 0.49 },
-    { name: 'Mil.Base',     x: 0.57, y: 0.77 },
-    { name: 'Mylta',        x: 0.79, y: 0.54 },
-    { name: 'Hospital',     x: 0.20, y: 0.43 },
-    { name: 'Museum',       x: 0.65, y: 0.42 },
-    { name: 'Farm',         x: 0.52, y: 0.54 },
-    { name: 'Stalber',      x: 0.68, y: 0.08 },
-    { name: 'Primorsk',     x: 0.22, y: 0.72 },
-  ];
-  ctx.font = '7.5px Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = 'rgba(200,185,130,0.3)';
-  landmarks.forEach(lm => ctx.fillText(lm.name, lm.x * W, lm.y * H));
-
-  /* 军事基地区域轮廓（手动圆角矩形，兼容旧浏览器）*/
-  ctx.strokeStyle = 'rgba(231,76,60,0.18)';
-  ctx.lineWidth = 1;
-  canvasRoundRect(ctx, 0.44 * W, 0.63 * H, 0.30 * W, 0.24 * H, 4);
-  ctx.stroke();
-
-  /* 密室标记 */
-  ctx.textBaseline = 'middle';
-  MISHI_DATA.forEach(room => {
-    const cx    = room.x * W;
-    const cy    = room.y * H;
-    const isHL  = room.id === highlightId;
-    const color = RISK_COLOR[room.risk];
-    const r     = isHL ? 12 : 9;
-
-    /* 光晕 */
-    if (isHL) {
-      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 22);
-      grd.addColorStop(0, color + '66');
-      grd.addColorStop(1, color + '00');
-      ctx.fillStyle = grd;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 22, 0, Math.PI * 2);
-      ctx.fill();
+    if (mishiFilterRisk !== 'all' && room.risk !== mishiFilterRisk) {
+      el.hidden = true;
     }
 
-    /* 填充圆 */
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = isHL ? color : color + 'bb';
-    ctx.fill();
-
-    /* 边框 */
-    ctx.strokeStyle = isHL ? '#ffffff' : 'rgba(255,255,255,0.5)';
-    ctx.lineWidth   = isHL ? 1.5 : 0.8;
-    ctx.stroke();
-
-    /* 编号 */
-    ctx.fillStyle   = '#fff';
-    ctx.font        = `bold ${isHL ? 9 : 8}px Arial, sans-serif`;
-    ctx.textAlign   = 'center';
-    ctx.fillText(room.id, cx, cy);
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      if (mishiActiveId === room.id) hideMishiDetail();
+      else showMishiDetail(room);
+    });
+    layer.appendChild(el);
   });
 }
 
-/* ----- 获取 Canvas 上被点击的密室 ----- */
-function getMishiHitRoom(canvas, clientX, clientY) {
-  const rect  = canvas.getBoundingClientRect();
-  const scaleX = canvas.width  / rect.width;
-  const scaleY = canvas.height / rect.height;
-  const mx = (clientX - rect.left)  * scaleX;
-  const my = (clientY - rect.top)   * scaleY;
+/* ----- 切换地图 ----- */
+function switchMishiMap(mapId) {
+  mishiCurrentMap = mapId;
+  mishiActiveId   = null;
+  mishiFilterRisk = 'all';
 
-  for (const room of MISHI_DATA) {
-    const dx = mx - room.x * canvas.width;
-    const dy = my - room.y * canvas.height;
-    if (Math.sqrt(dx * dx + dy * dy) <= 14) return room;
-  }
-  return null;
+  const cfg = MAPS_CONFIG[mapId];
+  document.getElementById('mishiMapImg').src          = cfg.img;
+  document.getElementById('mishiMapSubtitle').textContent = cfg.subtitle;
+
+  document.querySelectorAll('.mms-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.map === mapId)
+  );
+  document.querySelectorAll('.mf-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.risk === 'all')
+  );
+
+  hideMishiDetail();
+  renderMishiCards('all');
+  renderMishiMarkers();
 }
 
 /* ----- 展示详情底栏 ----- */
 function showMishiDetail(room) {
   mishiActiveId = room.id;
-  const riskClass = RISK_CLASS[room.risk];
+  const rc = RISK_CLASS[room.risk];
 
-  document.getElementById('mdNum').textContent   = `No.${room.id} · ${room.grid} 网格`;
+  document.getElementById('mdNum').textContent   = `No.${room.id} · ${room.grid} 区域`;
   document.getElementById('mdName').textContent  = room.name;
-  document.getElementById('mdGrid').innerHTML    = `<span class="risk-badge ${riskClass}">${room.risk}危</span> &nbsp;${room.area}`;
+  document.getElementById('mdGrid').innerHTML    = `<span class="risk-badge ${rc}">${room.risk}危</span> &nbsp;${room.area}`;
   document.getElementById('mdRisk').textContent  = `${room.risk}危区域`;
   document.getElementById('mdEntry').textContent = room.entry;
   document.getElementById('mdLoot').textContent  = room.loot;
   document.getElementById('mdTip').textContent   = room.tip;
 
   document.getElementById('mishiDetail').classList.add('open');
-  drawMishiMap(room.id);
+  renderMishiMarkers();
   highlightMishiCard(room.id);
 }
 
 function hideMishiDetail() {
   document.getElementById('mishiDetail').classList.remove('open');
   mishiActiveId = null;
-  drawMishiMap(null);
+  renderMishiMarkers();
   highlightMishiCard(null);
 }
 
@@ -1100,14 +1151,15 @@ function renderMishiCards(filter) {
   const grid = document.getElementById('mishiGrid');
   grid.innerHTML = '';
 
+  const allRooms = MAPS_CONFIG[mishiCurrentMap].rooms;
   const list = mishiFilterRisk === 'all'
-    ? MISHI_DATA
-    : MISHI_DATA.filter(r => r.risk === mishiFilterRisk);
+    ? allRooms
+    : allRooms.filter(r => r.risk === mishiFilterRisk);
 
   list.forEach((room, i) => {
-    const riskClass = RISK_CLASS[room.risk];
+    const rc   = RISK_CLASS[room.risk];
     const card = document.createElement('div');
-    card.className = `mishi-card risk-${riskClass}`;
+    card.className = `mishi-card risk-${rc}`;
     card.dataset.id = room.id;
     card.style.animationDelay = `${i * 0.04}s`;
     card.innerHTML = `
@@ -1115,12 +1167,12 @@ function renderMishiCards(filter) {
       <div class="mc-name">${room.name}</div>
       <div class="mc-footer">
         <span class="mc-grid">${room.area}</span>
-        <span class="risk-badge ${riskClass}">${room.risk}危</span>
+        <span class="risk-badge ${rc}">${room.risk}危</span>
       </div>
     `;
     card.addEventListener('click', () => {
-      if (mishiActiveId === room.id) { hideMishiDetail(); }
-      else { showMishiDetail(room); }
+      if (mishiActiveId === room.id) hideMishiDetail();
+      else showMishiDetail(room);
     });
     grid.appendChild(card);
   });
@@ -1128,23 +1180,11 @@ function renderMishiCards(filter) {
 
 /* ----- 初始化密室面板 ----- */
 function initMishi() {
-  // Canvas 延迟初始绘制（panel 可能仍是 display:none，等第一次切 tab 时由 switchTab 触发）
-  // 这里先绑定事件，drawMishiMap 在 switchTab 里会被调用
-
-  // Canvas 点击监听
-  const canvas = document.getElementById('mishiCanvas');
-  canvas.addEventListener('click', e => {
-    const room = getMishiHitRoom(canvas, e.clientX, e.clientY);
-    if (room) {
-      if (mishiActiveId === room.id) hideMishiDetail();
-      else showMishiDetail(room);
-    }
-  });
-
-  // Canvas hover 指针
-  canvas.addEventListener('mousemove', e => {
-    const room = getMishiHitRoom(canvas, e.clientX, e.clientY);
-    canvas.style.cursor = room ? 'pointer' : 'crosshair';
+  // 地图选择器
+  document.getElementById('mishiMapSel').addEventListener('click', e => {
+    const btn = e.target.closest('.mms-btn');
+    if (!btn || btn.dataset.map === mishiCurrentMap) return;
+    switchMishiMap(btn.dataset.map);
   });
 
   // 过滤栏
@@ -1154,14 +1194,16 @@ function initMishi() {
     document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     renderMishiCards(btn.dataset.risk);
+    renderMishiMarkers();
     hideMishiDetail();
   });
 
   // 详情关闭
   document.getElementById('mishiDetailClose').addEventListener('click', hideMishiDetail);
 
-  // 初始渲染卡片
+  // 初始渲染
   renderMishiCards('all');
+  renderMishiMarkers();
 }
 
 /* =============================================
